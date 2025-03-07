@@ -22,10 +22,14 @@ public class ReservationDao {
         return Optional.ofNullable(reservation);
     }
 
+    /**
+     * Retrieves all reservations from the database
+     * @return List of all reservations
+     */
     public List<Reservation> findAll() {
-        return entityManager.createQuery("SELECT r FROM Reservation r", Reservation.class).getResultList();
+        return entityManager.createQuery("SELECT r FROM Reservation r", Reservation.class)
+                .getResultList();
     }
-
     public List<Reservation> findByRestaurantId(Long restaurantId) {
         TypedQuery<Reservation> query = entityManager.createQuery(
                 "SELECT r FROM Reservation r WHERE r.restaurant.restaurantId = :restaurantId", Reservation.class);
@@ -42,7 +46,6 @@ public class ReservationDao {
 
     public List<Reservation> findByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         TypedQuery<Reservation> query = entityManager.createQuery(
-                "SELECT r FROM Reservation r WHERE r.reservationDate BETWEEN :startDate
                 "SELECT r FROM Reservation r WHERE r.reservationDate BETWEEN :startDate AND :endDate", 
                 Reservation.class);
         query.setParameter("startDate", startDate);
@@ -63,7 +66,40 @@ public class ReservationDao {
         query.setParameter("endDate", endDate);
         return query.getResultList();
     }
-
+    // Add these methods to your existing ReservationDao class
+    
+    public List<Reservation> findByRoomNumberAndMealDeducted(String roomNumber, Boolean mealDeducted) {
+        TypedQuery<Reservation> query = entityManager.createQuery(
+                "SELECT r FROM Reservation r WHERE r.roomNumber = :roomNumber AND r.mealDeducted = :mealDeducted", 
+                Reservation.class);
+        query.setParameter("roomNumber", roomNumber);
+        query.setParameter("mealDeducted", mealDeducted);
+        return query.getResultList();
+    }
+    public int countGuestsByRestaurantAndTime(Long restaurantId, LocalDateTime startTime, LocalDateTime endTime) {
+        TypedQuery<Integer> query = entityManager.createQuery(
+                "SELECT COALESCE(SUM(r.guestCount), 0) FROM Reservation r WHERE r.restaurant.restaurantId = :restaurantId " +
+                "AND r.reservationDate BETWEEN :startTime AND :endTime " +
+                "AND r.reservationStatus IN (:confirmedStatus, :pendingStatus)", 
+                Integer.class);
+        query.setParameter("restaurantId", restaurantId);
+        query.setParameter("startTime", startTime);
+        query.setParameter("endTime", endTime);
+        query.setParameter("confirmedStatus", Reservation.ReservationStatus.CONFIRMED);
+        query.setParameter("pendingStatus", Reservation.ReservationStatus.PENDING);
+        
+        Integer result = query.getSingleResult();
+        return result != null ? result : 0;
+    }
+    
+    public boolean existsByRoomNumberAndMealDeducted(String roomNumber, Boolean mealDeducted) {
+        TypedQuery<Long> query = entityManager.createQuery(
+                "SELECT COUNT(r) FROM Reservation r WHERE r.roomNumber = :roomNumber AND r.mealDeducted = :mealDeducted", 
+                Long.class);
+        query.setParameter("roomNumber", roomNumber);
+        query.setParameter("mealDeducted", mealDeducted);
+        return query.getSingleResult() > 0;
+    }
     /**
      * Count confirmed reservations for a restaurant on a specific date range
      */
@@ -76,10 +112,9 @@ public class ReservationDao {
         query.setParameter("restaurantId", restaurantId);
         query.setParameter("startDate", startDate);
         query.setParameter("endDate", endDate);
-        query.setParameter("status", ReservationStatus.CONFIRMED);
+        query.setParameter("status", Reservation.ReservationStatus.CONFIRMED);
         return query.getSingleResult().intValue();
     }
-
     /**
      * Save a new reservation or update an existing one
      */
@@ -92,7 +127,6 @@ public class ReservationDao {
             return entityManager.merge(reservation);
         }
     }
-
     /**
      * Delete a reservation by its ID
      */
@@ -103,14 +137,12 @@ public class ReservationDao {
             entityManager.remove(reservation);
         }
     }
-
     /**
      * Check if a reservation exists by its ID
      */
     public boolean existsById(Long id) {
         return entityManager.find(Reservation.class, id) != null;
     }
-
     /**
      * Find reservations by room number
      */
@@ -120,4 +152,22 @@ public class ReservationDao {
         query.setParameter("roomNumber", roomNumber);
         return query.getResultList();
     }
+    /**
+     * Deletes a reservation from the database
+     * @param reservation The reservation to delete
+     */
+    public void delete(Reservation reservation) {
+        if (reservation == null) {
+            throw new IllegalArgumentException("Reservation cannot be null");
+        }
+        
+        if (reservation.getReservationId() == null) {
+            throw new IllegalArgumentException("Reservation ID cannot be null");
+        }
+        
+        entityManager.remove(entityManager.contains(reservation) ? 
+                         reservation : entityManager.merge(reservation));
+    }
+    
+    
 }

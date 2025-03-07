@@ -1,7 +1,6 @@
 package com.aiora.reservation_backend.model;
 
-import jakarta.persistence.*;
-import java.math.BigDecimal;
+ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -24,31 +23,28 @@ public class Reservation {
     @Column(name = "reservation_date", nullable = false)
     private LocalDateTime reservationDate;
     
-    @Column(name = "reservation_status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ReservationStatus reservationStatus;
-    
-    @Column(name = "reservation_type", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ReservationType reservationType;
-    
-    @Column(name = "meal_deducted")
-    private Boolean mealDeducted;
-    
-    @Column(name = "payment_amount")
-    private BigDecimal paymentAmount;
+    @Column(name = "guest_name", nullable = false)
+    private String guestName;
     
     @Column(name = "room_number")
     private String roomNumber;
     
+    @Column(name = "is_hotel_guest")
+    private Boolean isHotelGuest;
+    
+    @Column(name = "meal_deducted")
+    private Boolean mealDeducted;
+    
+    @Column(name = "guest_count", nullable = false)
+    private Integer guestCount;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "reservation_status", nullable = false)
+    private ReservationStatus reservationStatus;
+    
     // Enum for reservation status
     public enum ReservationStatus {
-        CONFIRMED, CANCELLED, PENDING
-    }
-    
-    // Enum for reservation type
-    public enum ReservationType {
-        HOTEL_GUEST, EXTERNAL_GUEST
+        PENDING, CONFIRMED, CANCELLED, COMPLETED
     }
     
     // Getters and Setters
@@ -83,21 +79,29 @@ public class Reservation {
     public void setReservationDate(LocalDateTime reservationDate) {
         this.reservationDate = reservationDate;
     }
-
-    public ReservationStatus getReservationStatus() {
-        return reservationStatus;
+    
+    public String getGuestName() {
+        return guestName;
     }
 
-    public void setReservationStatus(ReservationStatus reservationStatus) {
-        this.reservationStatus = reservationStatus;
+    public void setGuestName(String guestName) {
+        this.guestName = guestName;
     }
 
-    public ReservationType getReservationType() {
-        return reservationType;
+    public String getRoomNumber() {
+        return roomNumber;
     }
 
-    public void setReservationType(ReservationType reservationType) {
-        this.reservationType = reservationType;
+    public void setRoomNumber(String roomNumber) {
+        this.roomNumber = roomNumber;
+    }
+
+    public Boolean getIsHotelGuest() {
+        return isHotelGuest;
+    }
+
+    public void setIsHotelGuest(Boolean isHotelGuest) {
+        this.isHotelGuest = isHotelGuest;
     }
 
     public Boolean getMealDeducted() {
@@ -107,20 +111,20 @@ public class Reservation {
     public void setMealDeducted(Boolean mealDeducted) {
         this.mealDeducted = mealDeducted;
     }
-
-    public BigDecimal getPaymentAmount() {
-        return paymentAmount;
+    
+    public Integer getGuestCount() {
+        return guestCount;
     }
 
-    public void setPaymentAmount(BigDecimal paymentAmount) {
-        this.paymentAmount = paymentAmount;
+    public void setGuestCount(Integer guestCount) {
+        this.guestCount = guestCount;
     }
 
-    public String getRoomNumber() {
-        return roomNumber;
+    public ReservationStatus getReservationStatus() {
+        return reservationStatus;
     }
 
-    public void setRoomNumber(String roomNumber) {
-        this.roomNumber = roomNumber;
+    public void setReservationStatus(ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
     }
 }

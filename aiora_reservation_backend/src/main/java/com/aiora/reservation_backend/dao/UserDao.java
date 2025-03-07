@@ -2,8 +2,10 @@ package com.aiora.reservation_backend.dao;
 
 import com.aiora.reservation_backend.model.User;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
+import org.hibernate.NonUniqueResultException;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,8 +42,7 @@ public class UserDao {
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
             return Optional.empty();
-        } catch (NonUniqueResultException e) {
-            throw new IllegalStateException("Multiple users found with username: " + username);
+        } catch (NonUniqueResultException e) {            throw new IllegalStateException("Multiple users found with username: " + username);
         }
     }
     /**

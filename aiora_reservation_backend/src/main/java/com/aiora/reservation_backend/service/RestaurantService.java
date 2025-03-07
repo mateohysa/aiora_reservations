@@ -1,7 +1,7 @@
 package com.aiora.reservation_backend.service;
 
 import com.aiora.reservation_backend.dao.RestaurantDao;
-import com.aiora.reservation_backend.exception.ResourceNotFoundException;
+import com.aiora.reservation_backend.api.exception.ResourceNotFoundException;
 import com.aiora.reservation_backend.model.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

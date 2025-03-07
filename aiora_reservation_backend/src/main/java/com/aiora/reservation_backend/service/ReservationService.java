@@ -3,7 +3,7 @@ package com.aiora.reservation_backend.service;
 import com.aiora.reservation_backend.dao.ReservationDao;
 import com.aiora.reservation_backend.dao.RestaurantDao;
 import com.aiora.reservation_backend.dao.UserDao;
-import com.aiora.reservation_backend.exception.ResourceNotFoundException;
+import com.aiora.reservation_backend.api.exception.*;
 import com.aiora.reservation_backend.model.Reservation;
 import com.aiora.reservation_backend.model.Restaurant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -80,7 +81,12 @@ public class ReservationService {
         List<Reservation> reservations = reservationDao.findByRoomNumberAndMealDeducted(roomNumber, true);
         return !reservations.isEmpty();
     }
-
+    public void deleteReservation(Long id) {
+        Reservation reservation = reservationDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reservation not found with id: " + id));
+        reservationDao.delete(reservation);
+    }
+    // Replace IllegalArgumentException with ValidationException in these methods
     private void validateReservation(Reservation reservation) {
         // Check if user exists
         userDao.findById(reservation.getUser().getUserId())
@@ -92,17 +98,17 @@ public class ReservationService {
         
         // Check if hotel guests are allowed for room-only restaurants
         if (restaurant.getRoomOnly() && !reservation.getIsHotelGuest()) {
-            throw new IllegalArgumentException("This restaurant only accepts hotel guests");
+            throw new ValidationException("This restaurant only accepts hotel guests");
         }
         
         // Check if outside guests are allowed
         if (!restaurant.getAcceptsOutsideGuests() && !reservation.getIsHotelGuest()) {
-            throw new IllegalArgumentException("This restaurant does not accept outside guests");
+            throw new ValidationException("This restaurant does not accept outside guests");
         }
         
         // Validate room number for hotel guests
         if (reservation.getIsHotelGuest() && (reservation.getRoomNumber() == null || reservation.getRoomNumber().trim().isEmpty())) {
-            throw new IllegalArgumentException("Room number is required for hotel guests");
+            throw new ValidationException("Room number is required for hotel guests");
         }
     }
     
@@ -121,8 +127,28 @@ public class ReservationService {
         
         // Check against max capacity
         if (totalGuestCount > restaurant.getMaxCapacity()) {
-            throw new IllegalArgumentException("Restaurant capacity exceeded for the requested time");
+            throw new ValidationException("Restaurant capacity exceeded for the requested time");
         }
+    }
+    private boolean isCapacityCheckRequired(Reservation existing, Reservation updated) {
+        return updated.getReservationDate() != null && 
+               updated.getGuestCount() != null && 
+               (existing.getReservationDate() == null || 
+                !existing.getReservationDate().equals(updated.getReservationDate()) || 
+                existing.getGuestCount() == null ||
+                !existing.getGuestCount().equals(updated.getGuestCount()));
+    }
+    public Optional<Reservation> findById(Long id) {
+        return reservationDao.findById(id);
+    }
+    
+    private boolean isMealEligibilityCheckRequired(Reservation existing, Reservation updated) {
+        return updated.getIsHotelGuest() != null && 
+               updated.getMealDeducted() != null && 
+               (existing.getIsHotelGuest() == null || 
+                existing.getIsHotelGuest() != updated.getIsHotelGuest() ||
+                existing.getMealDeducted() == null ||
+                existing.getMealDeducted() != updated.getMealDeducted());
     }
     
     private void checkMealEligibility(Reservation reservation) {
@@ -130,8 +156,15 @@ public class ReservationService {
         if (reservation.getIsHotelGuest() && reservation.getMealDeducted()) {
             // Check if meal has already been deducted for this room
             if (hasMealBeenDeducted(reservation.getRoomNumber())) {
-                throw new IllegalArgumentException("Meal has already been deducted for room " + reservation.getRoomNumber());
+                throw new ValidationException("Meal has already been deducted for room " + reservation.getRoomNumber());
             }
         }
     }
+/**
+ * Retrieves all reservations from the database
+ * @return List of all reservations
+ */
+public List<Reservation> getAllReservations() {
+    return reservationDao.findAll();
+}
 }

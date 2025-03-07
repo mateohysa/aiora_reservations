@@ -1,7 +1,10 @@
 package com.aiora.reservation_backend.service;
 
+import com.aiora.reservation_backend.api.model.LoginBody;
 import com.aiora.reservation_backend.dao.UserDao;
-import com.aiora.reservation_backend.exception.ResourceNotFoundException;
+import com.aiora.reservation_backend.api.exception.ResourceNotFoundException;
+import com.aiora.reservation_backend.api.model.LoginResponse;
+import com.aiora.reservation_backend.api.model.RegistrationBody;
 import com.aiora.reservation_backend.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -9,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -22,35 +27,68 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userDao.save(user);
+    public LoginResponse createUser(RegistrationBody registrationBody) {
+        User user = new User();
+        user.setUsername(registrationBody.getUsername());
+        user.setFirstName(registrationBody.getFirstName());
+        user.setLastName(registrationBody.getLastName());
+        user.setPassword(passwordEncoder.encode(registrationBody.getPassword()));
+        
+        User savedUser = userDao.save(user);
+        return convertToLoginResponse(savedUser);
     }
 
-    public User updateUser(Long id, User userDetails) {
+    public LoginResponse updateUser(Long id, RegistrationBody registrationBody) {
         User user = userDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         
-        user.setFirstName(userDetails.getFirstName());
-        user.setLastName(userDetails.getLastName());
-        user.setUsername(userDetails.getUsername());
+        user.setUsername(registrationBody.getUsername());
+        user.setFirstName(registrationBody.getFirstName());
+        user.setLastName(registrationBody.getLastName());
         
-        return userDao.save(user);
+        if (registrationBody.getPassword() != null && !registrationBody.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(registrationBody.getPassword()));
+        }
+        
+        User updatedUser = userDao.save(user);
+        return convertToLoginResponse(updatedUser);
+    }
+    public Optional<User> findById(Long id) {
+        return userDao.findById(id);
+    }
+
+    public LoginResponse getUser(Long id) {
+        User user = userDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+        return convertToLoginResponse(user);
+    }
+    public LoginResponse login(LoginBody loginBody) {
+        User user = userDao.findByUsername(loginBody.getUsername())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + loginBody.getUsername()));
+                
+        if (!passwordEncoder.matches(loginBody.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid password");
+        }
+        
+        return convertToLoginResponse(user);
     }
 
     public void deleteUser(Long id) {
-        if (!userDao.existsById(id)) {
-            throw new ResourceNotFoundException("User not found with id: " + id);
-        }
         userDao.deleteById(id);
     }
 
-    public User getUser(Long id) {
-        return userDao.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
+    public List<LoginResponse> getAllUsers() {
+        return userDao.findAll().stream()
+                .map(this::convertToLoginResponse)
+                .collect(Collectors.toList());
     }
-
-    public List<User> getAllUsers() {
-        return userDao.findAll();
+    
+    private LoginResponse convertToLoginResponse(User user) {
+        LoginResponse response = new LoginResponse();
+        response.setUserId(user.getUserId());
+        response.setUsername(user.getUsername());
+        response.setFirstName(user.getFirstName());
+        response.setLastName(user.getLastName());
+        return response;
     }
 }

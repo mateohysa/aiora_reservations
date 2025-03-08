@@ -1,5 +1,6 @@
 package com.aiora.reservation_backend.service;
 
+import com.aiora.reservation_backend.api.auth.JwtUtil;
 import com.aiora.reservation_backend.api.model.LoginBody;
 import com.aiora.reservation_backend.dao.UserDao;
 import com.aiora.reservation_backend.api.exception.ResourceNotFoundException;
@@ -20,6 +21,9 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Autowired
     public UserService(UserDao userDao, PasswordEncoder passwordEncoder) {
@@ -62,6 +66,7 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
         return convertToLoginResponse(user);
     }
+    // Update the login method to include JWT token generation
     public LoginResponse login(LoginBody loginBody) {
         User user = userDao.findByUsername(loginBody.getUsername())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with username: " + loginBody.getUsername()));
@@ -70,9 +75,15 @@ public class UserService {
             throw new RuntimeException("Invalid password");
         }
         
-        return convertToLoginResponse(user);
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getUsername(), user.getUserId());
+        
+        // Create response with token
+        LoginResponse response = convertToLoginResponse(user);
+        response.setToken(token);
+        
+        return response;
     }
-
     public void deleteUser(Long id) {
         userDao.deleteById(id);
     }

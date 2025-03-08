@@ -111,23 +111,27 @@ public class ReservationService {
             throw new ValidationException("Room number is required for hotel guests");
         }
     }
-    
+    // If there's a checkCapacity method that uses defaultCapacity, update it to use maxCapacity instead
     private void checkCapacity(Reservation reservation) {
         Restaurant restaurant = reservation.getRestaurant();
         LocalDateTime reservationDate = reservation.getReservationDate();
         
-        // Get total guest count for the restaurant at the specified time
-        int currentGuestCount = reservationDao.countGuestsByRestaurantAndTime(
-                restaurant.getRestaurantId(), 
-                reservationDate.minusHours(2), 
-                reservationDate.plusHours(2));
+        // Calculate time window (e.g., 2 hours before and after)
+        LocalDateTime startTime = reservationDate.minusHours(2);
+        LocalDateTime endTime = reservationDate.plusHours(2);
         
-        // Add the new reservation's guest count
-        int totalGuestCount = currentGuestCount + reservation.getGuestCount();
+        // Count existing guests in the time window
+        int existingGuests = reservationDao.countGuestsByRestaurantAndTime(
+                restaurant.getRestaurantId(), startTime, endTime);
         
-        // Check against max capacity
-        if (totalGuestCount > restaurant.getMaxCapacity()) {
-            throw new ValidationException("Restaurant capacity exceeded for the requested time");
+        // Add new guests
+        int totalGuests = existingGuests + reservation.getGuestCount();
+        
+        // Check against maxCapacity instead of defaultCapacity
+        if (totalGuests > restaurant.getMaxCapacity()) {
+            throw new ValidationException("Restaurant capacity exceeded for the selected time. " +
+                    "Current: " + existingGuests + ", Adding: " + reservation.getGuestCount() + 
+                    ", Max: " + restaurant.getMaxCapacity());
         }
     }
     private boolean isCapacityCheckRequired(Reservation existing, Reservation updated) {

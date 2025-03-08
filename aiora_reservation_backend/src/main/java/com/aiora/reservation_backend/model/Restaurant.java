@@ -44,8 +44,15 @@ public class Restaurant {
     public enum RestaurantType {
         FINE_DINING, CASUAL, BUFFET, SPECIALTY
     }
+    // Remove these fields:
+    // private String restaurantType;
+    // private Integer defaultCapacity;
     
-    // Getters and setters
+    // Also remove their getters and setters:
+    // public String getRestaurantType() { ... }
+    // public void setRestaurantType(String restaurantType) { ... }
+    // public Integer getDefaultCapacity() { ... }
+    // public void setDefaultCapacity(Integer defaultCapacity) { ... }
     public Long getRestaurantId() {
         return restaurantId;
     }

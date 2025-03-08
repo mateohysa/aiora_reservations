@@ -28,8 +28,8 @@ public class RestaurantService {
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + id));
         
         restaurant.setName(restaurantDetails.getName());
-        restaurant.setRestaurantType(restaurantDetails.getRestaurantType());
-        restaurant.setDefaultCapacity(restaurantDetails.getDefaultCapacity());
+        // Removed: restaurant.setRestaurantType(restaurantDetails.getRestaurantType());
+        // Removed: restaurant.setDefaultCapacity(restaurantDetails.getDefaultCapacity());
         restaurant.setMaxCapacity(restaurantDetails.getMaxCapacity());
         restaurant.setLocation(restaurantDetails.getLocation());
         restaurant.setDescription(restaurantDetails.getDescription());

@@ -76,20 +76,21 @@ public class ReservationDao {
         query.setParameter("mealDeducted", mealDeducted);
         return query.getResultList();
     }
+    // Fix for countGuestsByRestaurantAndTime method
     public int countGuestsByRestaurantAndTime(Long restaurantId, LocalDateTime startTime, LocalDateTime endTime) {
-        TypedQuery<Integer> query = entityManager.createQuery(
+        TypedQuery<Long> query = entityManager.createQuery(
                 "SELECT COALESCE(SUM(r.guestCount), 0) FROM Reservation r WHERE r.restaurant.restaurantId = :restaurantId " +
                 "AND r.reservationDate BETWEEN :startTime AND :endTime " +
                 "AND r.reservationStatus IN (:confirmedStatus, :pendingStatus)", 
-                Integer.class);
+                Long.class);
         query.setParameter("restaurantId", restaurantId);
         query.setParameter("startTime", startTime);
         query.setParameter("endTime", endTime);
         query.setParameter("confirmedStatus", Reservation.ReservationStatus.CONFIRMED);
         query.setParameter("pendingStatus", Reservation.ReservationStatus.PENDING);
         
-        Integer result = query.getSingleResult();
-        return result != null ? result : 0;
+        Long result = query.getSingleResult();
+        return result != null ? result.intValue() : 0;
     }
     
     public boolean existsByRoomNumberAndMealDeducted(String roomNumber, Boolean mealDeducted) {
@@ -103,6 +104,7 @@ public class ReservationDao {
     /**
      * Count confirmed reservations for a restaurant on a specific date range
      */
+    // Fix for countConfirmedReservationsByRestaurantAndDateRange method
     public Integer countConfirmedReservationsByRestaurantAndDateRange(Long restaurantId, LocalDateTime startDate, LocalDateTime endDate) {
         TypedQuery<Long> query = entityManager.createQuery(
                 "SELECT COUNT(r) FROM Reservation r WHERE r.restaurant.restaurantId = :restaurantId " +

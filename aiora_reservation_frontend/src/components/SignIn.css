@@ -1,0 +1,191 @@
+.signin-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #1a1a1a;
+  background-image: linear-gradient(to bottom right, #1a1a1a, #2d2d2d);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+.signin-form-container {
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  margin: 0 auto;
+  background-color: #2d2d2d;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 32px;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.5px;
+}
+
+.form-group {
+  margin-bottom: 24px;
+}
+
+.input-container {
+  position: relative;
+  width: 100%;
+}
+
+.password-container {
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #b3b3b3;
+  cursor: pointer;
+  padding: 0;
+  font-size: 18px;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-toggle:hover {
+  color: #ffffff;
+  background: none;
+  transform: translateY(-50%);
+}
+
+.password-toggle svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+input {
+  width: 100%;
+  padding: 14px;
+  background-color: #3d3d3d;
+  border: 2px solid #4d4d4d;
+  border-radius: 12px;
+  font-size: 16px;
+  color: #ffffff;
+  transition: all 0.3s ease;
+}
+
+input::placeholder {
+  color: #b3b3b3;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #646cff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(100, 108, 255, 0.2);
+}
+
+.signin-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #646cff;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.signin-button:hover {
+  background-color: #7b82ff;
+  transform: translateY(-1px);
+}
+
+.signin-button:disabled {
+  background-color: #4a4a4a;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.message {
+  margin-top: 24px;
+  padding: 14px;
+  border-radius: 12px;
+  text-align: center;
+  font-size: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.success {
+  background-color: rgba(46, 125, 50, 0.1);
+  color: #4caf50;
+  border: 1px solid rgba(76, 175, 80, 0.2);
+}
+
+.error {
+  background-color: rgba(211, 47, 47, 0.1);
+  color: #ff5252;
+  border: 1px solid rgba(255, 82, 82, 0.2);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .signin-form-container {
+    padding: 25px;
+    max-width: 90%;
+  }
+  
+  h2 {
+    font-size: 22px;
+    margin-bottom: 24px;
+  }
+  
+  input, .signin-button {
+    padding: 12px;
+    font-size: 15px;
+  }
+}
+
+/* Small mobile devices */
+@media (max-width: 480px) {
+  .signin-form-container {
+    padding: 20px;
+  }
+  
+  h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 16px;
+  }
+  
+  input, .signin-button {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .message {
+    font-size: 13px;
+    padding: 10px;
+  }
+}

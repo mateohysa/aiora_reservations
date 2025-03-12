@@ -1,5 +1,5 @@
 // Base API URL
-const API_BASE_URL = 'http://localhost:8080/api';
+const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 // Helper function to handle API responses
 const handleResponse = async (response) => {
@@ -15,16 +15,16 @@ export const authService = {
   // Login function
   login: async (credentials) => {
     try {
-      // For development, simulate a successful login
-      if (process.env.NODE_ENV === 'development') {
-        return {
-          userId: 1,
-          username: credentials.username,
-          firstName: 'Admin',
-          lastName: 'User',
-          token: 'mock-jwt-token'
-        };
-      }
+      // Remove or comment out the development mock data
+      // if (process.env.NODE_ENV === 'development') {
+      //   return {
+      //     userId: 1,
+      //     username: credentials.username,
+      //     firstName: 'Admin',
+      //     lastName: 'User',
+      //     token: 'mock-jwt-token'
+      //   };
+      // }
       
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
@@ -32,6 +32,7 @@ export const authService = {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(credentials),
+        credentials: 'include', // Important: This ensures cookies are sent with the request
       });
       
       return handleResponse(response);
@@ -41,10 +42,20 @@ export const authService = {
     }
   },
   
-  // Logout function
-  logout: () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+  // Logout function - update to call the backend logout endpoint
+  logout: async () => {
+    try {
+      await fetch(`${API_BASE_URL}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include', // Important: This ensures cookies are sent with the request
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear local storage regardless of API success/failure
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    }
   },
   
   // Check if user is authenticated
@@ -59,15 +70,15 @@ export const authService = {
   }
 };
 
-// Function to make authenticated API requests
+// Function to make authenticated API requests - update to include credentials
 export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   
-  // For development, return mock data
-  if (process.env.NODE_ENV === 'development') {
-    console.log('Using mock data for endpoint:', endpoint);
-    return mockData[endpoint] || [];
-  }
+  // Comment out or remove mock data for production
+  // if (process.env.NODE_ENV === 'development') {
+  //   console.log('Using mock data for endpoint:', endpoint);
+  //   return mockData[endpoint] || [];
+  // }
   
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -76,6 +87,7 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
       'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
     },
+    credentials: 'include', // Include cookies with each request
   });
   
   return handleResponse(response);

@@ -26,10 +26,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // CORS Configuration
         CorsConfiguration corsConfig = new CorsConfiguration();
-        corsConfig.addAllowedOrigin("http://localhost:8080");
-        corsConfig.addAllowedOrigin("*"); // For development - restrict this in production
+        corsConfig.addAllowedOrigin("http://localhost:3000"); // Your React frontend URL
         corsConfig.addAllowedMethod("*");
         corsConfig.addAllowedHeader("*");
+        corsConfig.setAllowCredentials(true); // Enable credentials
+        corsConfig.setMaxAge(3600L); // Cache preflight requests for 1 hour
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfig);
@@ -40,8 +41,8 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/**").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll() // Allow user creation
-                .requestMatchers("/api/v1/users/login").permitAll() // Allow login
+                .requestMatchers(HttpMethod.POST, "/api/v1/users").permitAll()
+                .requestMatchers("/api/v1/users/login").permitAll()
                 .requestMatchers("/api/v1/users/register").permitAll()
                 .requestMatchers("/api/v1/**").authenticated()
                 .anyRequest().permitAll()

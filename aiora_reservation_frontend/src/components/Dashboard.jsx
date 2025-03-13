@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { fetchWithAuth } from '../services/api';
 import './Dashboard.css';
 
 // Mock data for development until the API is ready
@@ -88,23 +89,28 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Simulate API call with mock data
-    const fetchData = async () => {
+    const fetchDashboardData = async () => {
       try {
-        // In a real app, this would be an API call
-        // const data = await fetchWithAuth('/restaurants');
-        setRestaurants(mockRestaurants);
+        setLoading(true);
+        
+        // Use the existing endpoint to fetch all restaurants
+        const restaurantsResponse = await fetchWithAuth('/restaurants');
+        setRestaurants(restaurantsResponse);
+        
+        // For now, we'll keep using the mock data for reservations
+        // until we implement the reservation endpoints
         setReservationStats(mockReservationStats);
         setRecentReservations(mockRecentReservations);
+        
         setLoading(false);
       } catch (err) {
-        console.error('Error fetching data:', err);
+        console.error('Error fetching dashboard data:', err);
         setError('Failed to load dashboard data. Please try again later.');
         setLoading(false);
       }
     };
 
-    fetchData();
+    fetchDashboardData();
   }, []);
 
   const handleViewAll = (restaurantId, type) => {

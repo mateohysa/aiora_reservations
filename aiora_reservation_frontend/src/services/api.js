@@ -74,11 +74,9 @@ export const authService = {
 export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   
-  // Comment out or remove mock data for production
-  // if (process.env.NODE_ENV === 'development') {
-  //   console.log('Using mock data for endpoint:', endpoint);
-  //   return mockData[endpoint] || [];
-  // }
+  if (!token) {
+    throw new Error('No authentication token found');
+  }
   
   const response = await fetch(`${API_BASE_URL}${endpoint}`, {
     ...options,
@@ -89,6 +87,14 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
     },
     credentials: 'include', // Include cookies with each request
   });
+  
+  if (response.status === 401) {
+    // Token expired or invalid
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/signin';
+    throw new Error('Session expired. Please sign in again.');
+  }
   
   return handleResponse(response);
 };

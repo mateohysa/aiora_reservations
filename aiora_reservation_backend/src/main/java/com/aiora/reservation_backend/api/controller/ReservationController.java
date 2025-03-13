@@ -18,10 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/v1/restaurants/{restaurantId}/reservations")
+@RequestMapping("/api/v1/reservations/{restaurantId}/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -106,6 +107,27 @@ public class ReservationController {
     public ResponseEntity<Void> deleteReservation(@PathVariable Long restaurantId, @PathVariable Long id) {
         reservationService.deleteReservation(id);
         return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/recent")
+    public ResponseEntity<List<ReservationResponse>> getRecentReservations(
+            @PathVariable Long restaurantId,
+            @RequestParam(defaultValue = "3") int limit) {
+        
+        List<Reservation> reservations = restaurantService.getRecentReservations(restaurantId, limit);
+        
+        // Convert to DTOs
+        List<ReservationResponse> responseList = reservations.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+                
+        return ResponseEntity.ok(responseList);
+    }
+    
+    @GetMapping("/stats")
+    public ResponseEntity<Map<String, Integer>> getReservationStats(@PathVariable Long restaurantId) {
+        // Implementation of getReservationStats method
+        return null; // Placeholder return, actual implementation needed
     }
     
     private Reservation convertToEntity(ReservationRequest request) {

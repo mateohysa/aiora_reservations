@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="aiora_reservations@localhost" uuid="5e5c7433-e232-4391-84f8-32cf0bc31dbd">
+    <data-source source="LOCAL" name="aiora_reservations@localhost [2]" uuid="2306da28-8f8e-4614-80cc-9b98d99fd3c4">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

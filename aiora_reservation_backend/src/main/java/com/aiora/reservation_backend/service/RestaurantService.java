@@ -93,11 +93,5 @@ public class RestaurantService {
         return restaurantDao.findRecentReservationsByRestaurantId(restaurantId, limit);
     }
 
-    public Map<String, Integer> getReservationStats(Long restaurantId) {
-        // Verify restaurant exists
-        Restaurant restaurant = restaurantDao.findById(restaurantId)
-                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with id: " + restaurantId));
-        
-        return restaurantDao.getReservationStats(restaurantId);
-    }
+   
 }

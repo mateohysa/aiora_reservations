@@ -110,18 +110,31 @@ public class ReservationController {
     }
     
     @GetMapping("/recent")
-    public ResponseEntity<List<ReservationResponse>> getRecentReservations(
+    public ResponseEntity<Map<String, Object>> getRecentReservations(
             @PathVariable Long restaurantId,
-            @RequestParam(defaultValue = "3") int limit) {
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "3") int size) {
         
-        List<Reservation> reservations = restaurantService.getRecentReservations(restaurantId, limit);
+        // Get paginated reservations
+        List<Reservation> reservations = restaurantService.getRecentReservationsPaginated(
+            restaurantId, page, size);
+        
+        // Get total count for pagination metadata
+        long totalReservations = restaurantService.countReservationsByRestaurant(restaurantId);
         
         // Convert to DTOs
         List<ReservationResponse> responseList = reservations.stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+        
+        // Create response with pagination metadata
+        Map<String, Object> response = new HashMap<>();
+        response.put("reservations", responseList);
+        response.put("currentPage", page);
+        response.put("totalItems", totalReservations);
+        response.put("totalPages", (int) Math.ceil((double) totalReservations / size));
                 
-        return ResponseEntity.ok(responseList);
+        return ResponseEntity.ok(response);
     }
     
     @GetMapping("/stats")

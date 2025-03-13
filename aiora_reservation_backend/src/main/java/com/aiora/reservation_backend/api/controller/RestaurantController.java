@@ -78,10 +78,7 @@ public class RestaurantController {
         return ResponseEntity.ok(restaurantService.getRecentReservations(restaurantId, limit));
     }
 
-    @GetMapping("/{restaurantId}/reservations/stats")
-    public ResponseEntity<Map<String, Integer>> getReservationStats(@PathVariable Long restaurantId) {
-        return ResponseEntity.ok(restaurantService.getReservationStats(restaurantId));
-    }
+
     
     // Convert Restaurant entity to RestaurantResponse DTO
     private RestaurantResponse convertToResponse(Restaurant restaurant) {

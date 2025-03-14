@@ -170,6 +170,32 @@ public class ReservationDao {
         entityManager.remove(entityManager.contains(reservation) ? 
                          reservation : entityManager.merge(reservation));
     }
+
+        /**
+ * Find recent reservations for a specific restaurant with pagination
+ * Orders reservations by date descending (newest first)
+ */
+public List<Reservation> findRecentByRestaurantId(Long restaurantId, int page, int size) {
+    TypedQuery<Reservation> query = entityManager.createQuery(
+            "SELECT r FROM Reservation r WHERE r.restaurant.restaurantId = :restaurantId " +
+            "ORDER BY r.reservationDate DESC", Reservation.class);
+    query.setParameter("restaurantId", restaurantId);
+    query.setFirstResult(page * size);
+    query.setMaxResults(size);
+    return query.getResultList();
+}
+
+/**
+ * Count total number of reservations for a restaurant
+ * Used for pagination metadata
+ */
+public long countByRestaurantId(Long restaurantId) {
+    TypedQuery<Long> query = entityManager.createQuery(
+            "SELECT COUNT(r) FROM Reservation r WHERE r.restaurant.restaurantId = :restaurantId", 
+            Long.class);
+    query.setParameter("restaurantId", restaurantId);
+    return query.getSingleResult();
+}
     
     
 }

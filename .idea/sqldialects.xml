@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="SqlDialectMappings">
-    <file url="file://$APPLICATION_CONFIG_DIR$/consoles/db/2306da28-8f8e-4614-80cc-9b98d99fd3c4/console.sql" dialect="PostgreSQL" />
+    <file url="file://$PROJECT_DIR$/aiora_reservations_dump.sql" dialect="PostgreSQL" />
   </component>
 </project>

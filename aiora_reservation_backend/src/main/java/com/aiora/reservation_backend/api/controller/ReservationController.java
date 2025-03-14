@@ -20,9 +20,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.HashMap;
 
 @RestController
-@RequestMapping("/api/v1/reservations/{restaurantId}/reservations")
+@RequestMapping("/api/v1/restaurants/{restaurantId}/reservations")
 public class ReservationController {
 
     private final ReservationService reservationService;
@@ -115,12 +116,13 @@ public class ReservationController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size) {
         
-        // Get paginated reservations
-        List<Reservation> reservations = restaurantService.getRecentReservationsPaginated(
+        // Implement proper pagination with sorting by date (most recent first)
+        // This assumes you have a method in your service to handle this
+        List<Reservation> reservations = reservationService.getRecentReservationsByRestaurant(
             restaurantId, page, size);
         
         // Get total count for pagination metadata
-        long totalReservations = restaurantService.countReservationsByRestaurant(restaurantId);
+        long totalReservations = reservationService.countReservationsByRestaurant(restaurantId);
         
         // Convert to DTOs
         List<ReservationResponse> responseList = reservations.stream()

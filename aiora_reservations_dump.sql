@@ -5,7 +5,7 @@
 -- Dumped from database version 17.0
 -- Dumped by pg_dump version 17.0
 
-SET statement_timeout = 0;
+--SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET transaction_timeout = 0;
@@ -21,7 +21,8 @@ SET row_security = off;
 -- Name: aiora_reservations; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE aiora_reservations WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'English_United States.1252';
+--CREATE DATABASE aiora_reservations WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.UTF-8';
+
 
 
 ALTER DATABASE aiora_reservations OWNER TO postgres;

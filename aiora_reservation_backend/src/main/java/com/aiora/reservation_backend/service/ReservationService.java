@@ -171,4 +171,15 @@ public class ReservationService {
 public List<Reservation> getAllReservations() {
     return reservationDao.findAll();
 }
+
+public List<Reservation> getRecentReservationsByRestaurant(Long restaurantId, int page, int size) {
+    // This would be a new method that uses JPA's Pageable to get paginated results
+    // sorted by reservationDate DESC
+    return reservationDao.findRecentByRestaurantId(restaurantId, page, size);
+}
+
+public long countReservationsByRestaurant(Long restaurantId) {
+    // This method would count all reservations for the restaurant
+    return reservationDao.countByRestaurantId(restaurantId);
+}
 }

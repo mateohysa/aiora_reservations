@@ -43,42 +43,6 @@ const mockReservationStats = {
   3: { pending: 3, confirmed: 5, total: 8 }
 };
 
-// Add mock recent reservations data
-const mockRecentReservations = [
-  {
-    id: 1,
-    restaurantId: 2,
-    restaurantName: "Casual Corner",
-    guestName: "John Smith",
-    date: "2023-11-15T19:00:00",
-    status: "CONFIRMED",
-    guestCount: 2,
-    isHotelGuest: true,
-    roomNumber: "304"
-  },
-  {
-    id: 2,
-    restaurantId: 3,
-    restaurantName: "Sunset Lounge",
-    guestName: "Maria Garcia",
-    date: "2023-11-16T20:30:00",
-    status: "PENDING",
-    guestCount: 4,
-    isHotelGuest: false,
-    roomNumber: null
-  },
-  {
-    id: 3,
-    restaurantId: 2,
-    restaurantName: "Casual Corner",
-    guestName: "Robert Johnson",
-    date: "2023-11-17T18:00:00",
-    status: "CONFIRMED",
-    guestCount: 3,
-    isHotelGuest: true,
-    roomNumber: "215"
-  }
-];
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -136,8 +100,28 @@ const Dashboard = () => {
           <div key={restaurant.restaurantId} className="stats-card">
             <div className="stats-header">
               <h2>{restaurant.name}</h2>
-              {restaurant.roomOnly && <span className="room-only-badge">Guest Only</span>}
-            </div>
+                <div className="header-buttons">
+                  {restaurant.roomOnly && (
+                    <>
+                  <span className="room-only-badge">Guest Only</span>
+                  <button 
+                    className="more-button"
+                    onClick={() => console.log(`Search in ${restaurant.name}`)}
+                  >
+                    Search
+                  </button>
+                  </>
+                  )}
+        {!restaurant.roomOnly && (
+      <button 
+        className="more-button"
+        onClick={() => console.log(`More options for ${restaurant.name}`)}
+      >
+        More
+      </button>
+    )}
+  </div>
+</div>
             
             <div className="stats-grid">
               <div className="stat-box pending">

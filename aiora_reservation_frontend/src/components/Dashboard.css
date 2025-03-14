@@ -398,3 +398,25 @@ nav, .navbar, header {
   background-color: rgba(244, 67, 54, 0.2);
   color: #f44336;
 }
+
+.header-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.more-button {
+  background-color: #3d3d3d;
+  color: #b3b3b3;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.more-button:hover {
+  background-color: #4d4d4d;
+  color: #ffffff;
+}

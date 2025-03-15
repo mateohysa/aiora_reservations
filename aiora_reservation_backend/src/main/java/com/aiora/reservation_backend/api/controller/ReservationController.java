@@ -114,7 +114,7 @@ public class ReservationController {
     public ResponseEntity<Map<String, Object>> getRecentReservations(
             @PathVariable Long restaurantId,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "3") int size) {
+            @RequestParam(defaultValue = "10") int size) {
         
         // Implement proper pagination with sorting by date (most recent first)
         // This assumes you have a method in your service to handle this

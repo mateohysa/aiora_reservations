@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../services/api';
 import './Dashboard.css';
 
-
-
-
-
 const Dashboard = () => {
   const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
@@ -14,6 +10,8 @@ const Dashboard = () => {
   const [recentReservations, setRecentReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -33,7 +31,7 @@ const Dashboard = () => {
         for (const restaurant of restaurantsResponse) {
           const restaurantId = restaurant.restaurantId;
           
-          // Fetch reservation stats - FIX THE URL PREFIX
+          // Fetch reservation stats
           try {
             const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
             stats[restaurantId] = {
@@ -50,7 +48,8 @@ const Dashboard = () => {
           if (restaurantId === 2 || restaurantId === 3) {
             try {
               console.log(`Fetching reservations for restaurant ${restaurantId}`);
-              const recentResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/recent`);
+              // Add pagination parameters to the API call
+              const recentResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/recent?page=${currentPage}&size=10`);
               
               if (recentResponse.reservations && recentResponse.reservations.length > 0) {
                 const formattedReservations = recentResponse.reservations.map(res => ({
@@ -67,6 +66,14 @@ const Dashboard = () => {
                 
                 // Add to our collection of all reservations
                 allRecentReservations.push(...formattedReservations);
+              }
+              
+              // Store pagination metadata
+              if (recentResponse.totalPages) {
+                setTotalPages(recentResponse.totalPages);
+              }
+              if (recentResponse.currentPage !== undefined) {
+                setCurrentPage(recentResponse.currentPage);
               }
             } catch (err) {
               console.error(`Failed to fetch recent reservations for restaurant ${restaurantId}:`, err);
@@ -92,6 +99,66 @@ const Dashboard = () => {
     navigate(`/restaurants/${restaurantId}/reservations?status=${type}`);
   };
 
+  // Handle pagination
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+    
+    // Re-fetch data with the new page
+    const fetchPagedData = async () => {
+      try {
+        setLoading(true);
+        
+        // Initialize allRecentReservations
+        const allRecentReservations = [];
+        
+        // Fetch only the reservations for the new page
+        for (const restaurant of restaurants) {
+          const restaurantId = restaurant.restaurantId;
+          
+          if (restaurantId === 2 || restaurantId === 3) {
+            try {
+              const recentResponse = await fetchWithAuth(
+                `/restaurants/${restaurantId}/reservations/recent?page=${newPage}&size=10`
+              );
+              
+              if (recentResponse.reservations && recentResponse.reservations.length > 0) {
+                const formattedReservations = recentResponse.reservations.map(res => ({
+                  id: res.reservationId,
+                  restaurantId: res.restaurantId,
+                  restaurantName: res.restaurantName,
+                  guestName: res.guestName,
+                  date: res.reservationDate,
+                  status: res.reservationStatus,
+                  guestCount: res.guestCount,
+                  isHotelGuest: res.isHotelGuest,
+                  roomNumber: res.roomNumber
+                }));
+                
+                allRecentReservations.push(...formattedReservations);
+              }
+              
+              // Update pagination metadata if available
+              if (recentResponse.totalPages) {
+                setTotalPages(recentResponse.totalPages);
+              }
+            } catch (err) {
+              console.error(`Failed to fetch recent reservations for restaurant ${restaurantId}:`, err);
+            }
+          }
+        }
+        
+        // Update the state with the new reservations
+        setRecentReservations(allRecentReservations);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching paged data:', err);
+        setLoading(false);
+      }
+    };
+    
+    fetchPagedData();
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading dashboard...</div>;
   }
@@ -114,25 +181,25 @@ const Dashboard = () => {
                 <div className="header-buttons">
                   {restaurant.roomOnly && (
                     <>
-                  <span className="room-only-badge">Guest Only</span>
-                  <button 
-                    className="more-button"
-                    onClick={() => console.log(`Search in ${restaurant.name}`)}
-                  >
-                    Search
-                  </button>
-                  </>
+                      <span className="room-only-badge">Guest Only</span>
+                      <button 
+                        className="more-button"
+                        onClick={() => console.log(`Search in ${restaurant.name}`)}
+                      >
+                        Search
+                      </button>
+                    </>
                   )}
-        {!restaurant.roomOnly && (
-      <button 
-        className="more-button"
-        onClick={() => console.log(`More options for ${restaurant.name}`)}
-      >
-        More
-      </button>
-    )}
-  </div>
-</div>
+                  {!restaurant.roomOnly && (
+                    <button 
+                      className="more-button"
+                      onClick={() => console.log(`More options for ${restaurant.name}`)}
+                    >
+                      More
+                    </button>
+                  )}
+                </div>
+            </div>
             
             <div className="stats-grid">
               <div className="stat-box pending">
@@ -174,8 +241,6 @@ const Dashboard = () => {
                   )}
                 </div>
               </div>
-              
-              {/* Total Reservations section removed */}
             </div>
           </div>
         ))}
@@ -227,6 +292,29 @@ const Dashboard = () => {
         ) : (
           <div className="placeholder-message">
             No recent reservations found.
+          </div>
+        )}
+        
+        {/* Pagination Controls */}
+        {recentReservations.length > 0 && (
+          <div className="pagination-controls">
+            <button 
+              className="pagination-btn"
+              disabled={currentPage <= 0}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              Previous
+            </button>
+            <span className="pagination-info">
+              Page {currentPage + 1} of {totalPages}
+            </span>
+            <button 
+              className="pagination-btn"
+              disabled={currentPage >= totalPages - 1 || totalPages <= 1}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              Next
+            </button>
           </div>
         )}
       </div>

@@ -141,8 +141,34 @@ public class ReservationController {
     
     @GetMapping("/stats")
     public ResponseEntity<Map<String, Integer>> getReservationStats(@PathVariable Long restaurantId) {
-        // Implementation of getReservationStats method
-        return null; // Placeholder return, actual implementation needed
+        Map<String, Integer> stats = new HashMap<>();
+    
+    // Get all reservations for the restaurant
+        List<Reservation> reservations = reservationService.getReservationsByRestaurant(restaurantId);
+    
+    // Count total
+        stats.put("totalReservations", reservations.size());
+    
+    // Count by status
+        int pendingCount = (int) reservations.stream()
+            .filter(r -> r.getReservationStatus() == Reservation.ReservationStatus.PENDING)
+            .count();
+        stats.put("pendingReservations", pendingCount);
+    
+        int confirmedCount = (int) reservations.stream()
+            .filter(r -> r.getReservationStatus() == Reservation.ReservationStatus.CONFIRMED)
+            .count();
+        stats.put("confirmedReservations", confirmedCount);
+    
+        return ResponseEntity.ok(stats);
+    }
+    @GetMapping("/debug")
+    public ResponseEntity<Map<String, String>> debugEndpoint(@PathVariable Long restaurantId) {
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Debug endpoint reached successfully");
+        response.put("restaurantId", restaurantId.toString());
+        response.put("timestamp", LocalDateTime.now().toString());
+        return ResponseEntity.ok(response);
     }
     
     private Reservation convertToEntity(ReservationRequest request) {

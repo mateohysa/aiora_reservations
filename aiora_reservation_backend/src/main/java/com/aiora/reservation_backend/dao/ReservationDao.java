@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ReservationDao {
+public class  ReservationDao {
 
     @PersistenceContext
     private EntityManager entityManager;

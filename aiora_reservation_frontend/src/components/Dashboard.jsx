@@ -3,45 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../services/api';
 import './Dashboard.css';
 
-// Mock data for development until the API is ready
-const mockRestaurants = [
-  {
-    restaurantId: 1,
-    name: "The Grand Dining",
-    restaurantType: "FINE_DINING",
-    defaultCapacity: 50,
-    maxCapacity: 75,
-    location: "Main Building, 1st Floor",
-    description: "Elegant fine dining experience",
-    roomOnly: true
-  },
-  {
-    restaurantId: 2,
-    name: "Casual Corner",
-    restaurantType: "CASUAL",
-    defaultCapacity: 30,
-    maxCapacity: 40,
-    location: "East Wing, Ground Floor",
-    description: "Relaxed casual dining",
-    roomOnly: false
-  },
-  {
-    restaurantId: 3,
-    name: "Sunset Lounge",
-    restaurantType: "LOUNGE",
-    defaultCapacity: 25,
-    maxCapacity: 35,
-    location: "West Wing, Top Floor",
-    description: "Scenic rooftop dining",
-    roomOnly: false
-  }
-];
 
-const mockReservationStats = {
-  1: { pending: 0, confirmed: 0, total: 0 },
-  2: { pending: 2, confirmed: 4, total: 6 },
-  3: { pending: 3, confirmed: 5, total: 8 }
-};
+
 
 
 const Dashboard = () => {
@@ -57,15 +20,63 @@ const Dashboard = () => {
       try {
         setLoading(true);
         
-        // Use the existing endpoint to fetch all restaurants
+        // Fetch all restaurants
         const restaurantsResponse = await fetchWithAuth('/restaurants');
         setRestaurants(restaurantsResponse);
         
-        // For now, we'll keep using the mock data for reservations
-        // until we implement the reservation endpoints
-        setReservationStats(mockReservationStats);
-        setRecentReservations(mockRecentReservations);
+        // Initialize stats object
+        const stats = {};
+        // Initialize allRecentReservations OUTSIDE the loop
+        const allRecentReservations = [];
         
+        // Fetch reservation stats and recent reservations for each restaurant
+        for (const restaurant of restaurantsResponse) {
+          const restaurantId = restaurant.restaurantId;
+          
+          // Fetch reservation stats - FIX THE URL PREFIX
+          try {
+            const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
+            stats[restaurantId] = {
+              pending: statsResponse.pendingReservations || 0,
+              confirmed: statsResponse.confirmedReservations || 0,
+              total: statsResponse.totalReservations || 0
+            };
+          } catch (err) {
+            console.error(`Failed to fetch stats for restaurant ${restaurantId}:`, err);
+            stats[restaurantId] = { pending: 0, confirmed: 0, total: 0 };
+          }
+          
+          // Get recent reservations for restaurant 2 and 3
+          if (restaurantId === 2 || restaurantId === 3) {
+            try {
+              console.log(`Fetching reservations for restaurant ${restaurantId}`);
+              const recentResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/recent`);
+              
+              if (recentResponse.reservations && recentResponse.reservations.length > 0) {
+                const formattedReservations = recentResponse.reservations.map(res => ({
+                  id: res.reservationId,
+                  restaurantId: res.restaurantId,
+                  restaurantName: res.restaurantName,
+                  guestName: res.guestName,
+                  date: res.reservationDate,
+                  status: res.reservationStatus,
+                  guestCount: res.guestCount,
+                  isHotelGuest: res.isHotelGuest,
+                  roomNumber: res.roomNumber
+                }));
+                
+                // Add to our collection of all reservations
+                allRecentReservations.push(...formattedReservations);
+              }
+            } catch (err) {
+              console.error(`Failed to fetch recent reservations for restaurant ${restaurantId}:`, err);
+            }
+          }
+        }
+        
+        // At the end of the loop, set all reservations collected from both restaurants
+        setRecentReservations(allRecentReservations);
+        setReservationStats(stats);
         setLoading(false);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);

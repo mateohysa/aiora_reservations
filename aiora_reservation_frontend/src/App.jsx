@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
 import { authService } from './services/api';
 import './App.css';
+import RestaurantDashboard from './components/RestaurantDashboard';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -35,6 +36,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/restaurants/:restaurantId/dashboard" 
+            element={
+              <ProtectedRoute>
+                <RestaurantDashboard />
               </ProtectedRoute>
             } 
           />

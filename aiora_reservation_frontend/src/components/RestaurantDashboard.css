@@ -1,0 +1,200 @@
+.tables-container {
+  margin: 20px 0;
+  background-color: #1e2938;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tables-container h2 {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+}
+
+.tables-info {
+  font-size: 0.9rem;
+  color: #bdc3c7;
+  margin-bottom: 15px;
+}
+
+.tables-grid {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.table-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #2c3e50;
+  border-radius: 4px;
+  padding: 5px;
+  height: 50px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #34495e;
+}
+
+.table-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  background-color: #34495e;
+}
+
+.table-number {
+  font-weight: normal;
+  font-size: 14px;
+  color: #ecf0f1;
+}
+
+.table-capacity {
+  display: none;
+}
+
+/* Modal styling for reservation form */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1e2938;
+  border-radius: 10px;
+  padding: 25px;
+  width: 90%;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.close-modal {
+  position: absolute;
+  right: 15px;
+  top: 15px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #e74c3c;
+}
+
+.new-reservation-btn {
+  margin-left: auto;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.new-reservation-btn:hover {
+  background-color: #27ae60;
+}
+
+/* Responsive adjustments for the table grid */
+@media (max-width: 1200px) {
+  .tables-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+@media (max-width: 992px) {
+  .tables-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .tables-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .tables-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Match the main dashboard header style */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dashboard-header h1 {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+  color: #ffffff;
+}
+
+.header-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.action-button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s, transform 0.2s;
+  background-color: #1e2938;
+  color: white;
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+}
+
+.blue-button {
+  background-color: #3498db;
+}
+
+.blue-button:hover {
+  background-color: #2980b9;
+}
+
+/* Adjust the restaurant summary to have better spacing */
+.restaurant-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-bottom: 20px;
+  background-color: #1e2938;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.summary-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: #bdc3c7;
+}
+
+.summary-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+} 

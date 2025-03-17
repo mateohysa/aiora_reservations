@@ -193,7 +193,7 @@ const Dashboard = () => {
                   {!restaurant.roomOnly && (
                     <button 
                       className="more-button"
-                      onClick={() => console.log(`More options for ${restaurant.name}`)}
+                      onClick={() => navigate(`/restaurants/${restaurant.restaurantId}/dashboard`)}
                     >
                       More
                     </button>

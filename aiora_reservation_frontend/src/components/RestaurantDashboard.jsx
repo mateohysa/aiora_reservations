@@ -200,6 +200,12 @@ const RestaurantDashboard = () => {
         <h1>{restaurant.name} - Tables</h1>
         <div className="header-buttons">
           <button 
+            className="action-button"
+            onClick={() => console.log('Search button clicked')}
+          >
+            Search
+          </button>
+          <button 
             className="action-button blue-button"
             onClick={handleNewReservation}
           >

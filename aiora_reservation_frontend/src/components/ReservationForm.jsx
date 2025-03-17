@@ -7,8 +7,8 @@ const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
     reservationDate: '',
     isHotelGuest: false,
     roomNumber: '',
-    specialRequests: '',
-    userId: 1 // Default user ID, you might want to get this from context/store
+    mealDeducted: false,
+    userId: 1 // Default user ID, would typically come from authentication context
   });
   
   const [errors, setErrors] = useState({});
@@ -20,7 +20,7 @@ const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
       [name]: type === 'checkbox' ? checked : value
     });
     
-    // Clear error for this field when it's changed
+    // Clear error for this field
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -33,7 +33,7 @@ const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
     const newErrors = {};
     
     if (!formData.guestName.trim()) {
-      newErrors.guestName = 'Guest name is required';
+      newErrors.guestName = 'Name is required';
     }
     
     if (!formData.reservationDate) {
@@ -41,11 +41,11 @@ const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
     }
     
     if (formData.guestCount < 1) {
-      newErrors.guestCount = 'Guest count must be at least 1';
+      newErrors.guestCount = 'At least 1 guest required';
     }
     
     if (formData.isHotelGuest && !formData.roomNumber.trim()) {
-      newErrors.roomNumber = 'Room number is required for hotel guests';
+      newErrors.roomNumber = 'Room number required for hotel guests';
     }
     
     setErrors(newErrors);
@@ -74,88 +74,106 @@ const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
   };
   
   return (
-    <form onSubmit={handleSubmit} className="reservation-form">
-      <div className="form-group">
-        <label>Guest Name</label>
+    <form onSubmit={handleSubmit} className="modern-form">
+      <div className="form-field">
         <input 
           type="text"
+          id="guestName"
           name="guestName"
           value={formData.guestName}
           onChange={handleChange}
           className={errors.guestName ? 'error' : ''}
+          placeholder=" "
+          required
         />
-        {errors.guestName && <div className="error-message">{errors.guestName}</div>}
+        <label htmlFor="guestName">Guest Name</label>
+        {errors.guestName && <div className="field-error">{errors.guestName}</div>}
       </div>
       
       <div className="form-group">
-        <label>Number of Guests</label>
-        <input 
-          type="number"
-          name="guestCount"
-          min="1"
-          max="20"
-          value={formData.guestCount}
-          onChange={handleChange}
-          className={errors.guestCount ? 'error' : ''}
-        />
-        {errors.guestCount && <div className="error-message">{errors.guestCount}</div>}
-      </div>
-      
-      <div className="form-group">
-        <label>Date and Time</label>
-        <input 
-          type="datetime-local"
-          name="reservationDate"
-          min={getMinDateTime()}
-          value={formData.reservationDate}
-          onChange={handleChange}
-          className={errors.reservationDate ? 'error' : ''}
-        />
-        {errors.reservationDate && <div className="error-message">{errors.reservationDate}</div>}
-      </div>
-      
-      <div className="form-group checkbox">
-        <label>
+        <div className="form-field half-width">
           <input 
-            type="checkbox"
-            name="isHotelGuest"
-            checked={formData.isHotelGuest}
+            type="number"
+            id="guestCount"
+            name="guestCount"
+            min="1"
+            max="20"
+            value={formData.guestCount}
             onChange={handleChange}
+            className={errors.guestCount ? 'error' : ''}
+            placeholder=" "
+            required
           />
-          Hotel Guest
-        </label>
+          <label htmlFor="guestCount">Guest Count</label>
+          {errors.guestCount && <div className="field-error">{errors.guestCount}</div>}
+        </div>
+        
+        <div className="form-field half-width">
+          <input 
+            type="datetime-local"
+            id="reservationDate"
+            name="reservationDate"
+            min={getMinDateTime()}
+            value={formData.reservationDate}
+            onChange={handleChange}
+            className={errors.reservationDate ? 'error' : ''}
+            required
+          />
+          <label htmlFor="reservationDate" className="active">Date & Time</label>
+          {errors.reservationDate && <div className="field-error">{errors.reservationDate}</div>}
+        </div>
+      </div>
+      
+      <div className="form-toggles">
+        <div className="toggle-field">
+          <label className="toggle">
+            <input 
+              type="checkbox"
+              name="isHotelGuest"
+              checked={formData.isHotelGuest}
+              onChange={handleChange}
+            />
+            <span className="toggle-slider"></span>
+            <span className="toggle-label">Hotel Guest</span>
+          </label>
+        </div>
+        
+        <div className="toggle-field">
+          <label className="toggle">
+            <input 
+              type="checkbox"
+              name="mealDeducted"
+              checked={formData.mealDeducted}
+              onChange={handleChange}
+            />
+            <span className="toggle-slider"></span>
+            <span className="toggle-label">Meal Deducted</span>
+          </label>
+        </div>
       </div>
       
       {formData.isHotelGuest && (
-        <div className="form-group">
-          <label>Room Number</label>
+        <div className="form-field">
           <input 
             type="text"
+            id="roomNumber"
             name="roomNumber"
             value={formData.roomNumber}
             onChange={handleChange}
             className={errors.roomNumber ? 'error' : ''}
+            placeholder=" "
           />
-          {errors.roomNumber && <div className="error-message">{errors.roomNumber}</div>}
+          <label htmlFor="roomNumber">Room Number</label>
+          {errors.roomNumber && <div className="field-error">{errors.roomNumber}</div>}
         </div>
       )}
       
-      <div className="form-group">
-        <label>Special Requests</label>
-        <textarea 
-          name="specialRequests"
-          value={formData.specialRequests}
-          onChange={handleChange}
-          rows="3"
-        ></textarea>
-      </div>
-      
       <div className="form-actions">
-        <button type="button" className="cancel-btn" onClick={onCancel}>
+        <button type="button" className="btn-cancel" onClick={onCancel}>
           Cancel
         </button>
-        <button type="submit" className="submit-btn">
-          Create Reservation
+        <button type="submit" className="btn-submit">
+          Confirm Reservation
         </button>
       </div>
     </form>

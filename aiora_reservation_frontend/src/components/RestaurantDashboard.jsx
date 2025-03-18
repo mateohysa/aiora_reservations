@@ -214,26 +214,6 @@ const RestaurantDashboard = () => {
         </div>
       </div>
       
-      {/* Restaurant Stats Summary */}
-      <div className="restaurant-summary">
-        <div className="summary-item">
-          <span className="summary-label">Type:</span>
-          <span className="summary-value">{restaurant.restaurantType}</span>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">Location:</span>
-          <span className="summary-value">{restaurant.location}</span>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">Capacity:</span>
-          <span className="summary-value">{restaurant.defaultCapacity} (max {restaurant.maxCapacity})</span>
-        </div>
-        <div className="summary-item">
-          <span className="summary-label">Total Reservations:</span>
-          <span className="summary-value">{reservationStats.total || 0}</span>
-        </div>
-      </div>
-      
       {/* Table Grid Section */}
       <div className="tables-container">
         <h2>Floor Plan</h2>
@@ -321,8 +301,10 @@ const RestaurantDashboard = () => {
       {showReservationForm && (
         <div className="modal-overlay">
           <div className="modal-content">
-            <h2>New Reservation at {restaurant.name}</h2>
-            <button className="close-modal" onClick={handleCloseReservationForm}>×</button>
+            <div className="modal-header">
+              <h2>New Reservation at {restaurant.name}</h2>
+              <button className="close-modal" onClick={handleCloseReservationForm}>×</button>
+            </div>
             
             {formError && <div className="form-error">{formError}</div>}
             

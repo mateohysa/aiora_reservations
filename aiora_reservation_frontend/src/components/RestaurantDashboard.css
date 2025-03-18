@@ -1,9 +1,21 @@
+/* Ensure consistent dashboard sizing across all restaurants */
+.dashboard-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 800px; /* Set minimum height to ensure consistency */
+}
+
+/* Make tables container consistent */
 .tables-container {
   margin: 20px 0;
   background-color: #272c35;
   border-radius: 8px;
   padding: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  min-height: 500px; /* Ensure minimum height for the tables section */
 }
 
 .tables-container h2 {
@@ -17,13 +29,16 @@
   margin-bottom: 15px;
 }
 
+/* Ensure tables grid remains consistent */
 .tables-grid {
   display: grid;
   grid-template-columns: repeat(10, 1fr);
   gap: 10px;
   margin-top: 15px;
+  width: 100%;
 }
 
+/* Make each table item a consistent size */
 .table-item {
   display: flex;
   align-items: center;
@@ -35,6 +50,8 @@
   cursor: pointer;
   transition: all 0.2s ease;
   border: 1px solid #34495e;
+  /* Ensure consistent width/height ratio */
+  aspect-ratio: 1.5 / 1;
 }
 
 .table-item:hover {
@@ -197,4 +214,15 @@
   font-size: 1rem;
   font-weight: 600;
   color: #ffffff;
+}
+
+/* Ensure recent reservations section has consistent size */
+.recent-reservations {
+  margin: 20px 0;
+  background-color: #272c35;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  min-height: 200px; /* Minimum height for recent reservations */
 } 

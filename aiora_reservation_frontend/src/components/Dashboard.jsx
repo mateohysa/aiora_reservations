@@ -81,6 +81,11 @@ const Dashboard = () => {
           }
         }
         
+        // Sort the combined list of reservations
+        allRecentReservations.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date);
+        });
+        
         // At the end of the loop, set all reservations collected from both restaurants
         setRecentReservations(allRecentReservations);
         setReservationStats(stats);
@@ -146,6 +151,11 @@ const Dashboard = () => {
             }
           }
         }
+        
+        // Sort the new reservations
+        allRecentReservations.sort((a, b) => {
+          return new Date(b.date) - new Date(a.date);
+        });
         
         // Update the state with the new reservations
         setRecentReservations(allRecentReservations);

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import './ReservationForm.css';
 
 const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -63,117 +64,122 @@ const ReservationForm = ({ restaurantId, onSubmit, onCancel }) => {
     }
   };
   
-  // Calculate min date-time (now + 30 minutes, rounded to nearest hour/half-hour)
+  // Calculate min date-time (today at 6pm)
   const getMinDateTime = () => {
     const now = new Date();
-    now.setMinutes(now.getMinutes() + 30);
-    now.setMinutes(now.getMinutes() >= 30 ? 30 : 0);
-    now.setSeconds(0);
-    now.setMilliseconds(0);
+    now.setHours(18, 0, 0, 0); // Set to 6:00 PM
+    
+    // If it's already past 6pm, set to tomorrow at 6pm
+    if (new Date() > now) {
+      now.setDate(now.getDate() + 1);
+    }
+    
     return now.toISOString().slice(0, 16); // Format: "YYYY-MM-DDThh:mm"
   };
   
+  // For default time value, set to 6:00 PM
+  const getDefaultTime = () => {
+    const defaultDate = new Date();
+    defaultDate.setDate(defaultDate.getDate() + 1); // Tomorrow
+    defaultDate.setHours(18, 0, 0, 0); // 6:00 PM
+    return defaultDate.toISOString().slice(0, 16);
+  };
+  
   return (
-    <form onSubmit={handleSubmit} className="modern-form">
+    <form onSubmit={handleSubmit} className="shadcn-form">
       <div className="form-field">
+        <label htmlFor="guestName" className="field-label">Guest Name</label>
         <input 
           type="text"
           id="guestName"
           name="guestName"
           value={formData.guestName}
           onChange={handleChange}
-          className={errors.guestName ? 'error' : ''}
-          placeholder=" "
-          required
+          className={errors.guestName ? 'input-error' : ''}
+          placeholder="Enter guest name"
         />
-        <label htmlFor="guestName">Guest Name</label>
-        {errors.guestName && <div className="field-error">{errors.guestName}</div>}
+        {errors.guestName && <div className="error-message">{errors.guestName}</div>}
       </div>
       
-      <div className="form-group">
-        <div className="form-field half-width">
-          <input 
-            type="number"
-            id="guestCount"
-            name="guestCount"
-            min="1"
-            max="20"
-            value={formData.guestCount}
-            onChange={handleChange}
-            className={errors.guestCount ? 'error' : ''}
-            placeholder=" "
-            required
-          />
-          <label htmlFor="guestCount">Guest Count</label>
-          {errors.guestCount && <div className="field-error">{errors.guestCount}</div>}
-        </div>
-        
-        <div className="form-field half-width">
-          <input 
-            type="datetime-local"
-            id="reservationDate"
-            name="reservationDate"
-            min={getMinDateTime()}
-            value={formData.reservationDate}
-            onChange={handleChange}
-            className={errors.reservationDate ? 'error' : ''}
-            required
-          />
-          <label htmlFor="reservationDate" className="active">Date & Time</label>
-          {errors.reservationDate && <div className="field-error">{errors.reservationDate}</div>}
-        </div>
+      <div className="form-field">
+        <label htmlFor="guestCount" className="field-label">Number of Guests</label>
+        <input 
+          type="number"
+          id="guestCount"
+          name="guestCount"
+          min="1"
+          max="20"
+          value={formData.guestCount}
+          onChange={handleChange}
+          className={errors.guestCount ? 'input-error' : ''}
+        />
+        {errors.guestCount && <div className="error-message">{errors.guestCount}</div>}
       </div>
       
-      <div className="form-toggles">
-        <div className="toggle-field">
-          <label className="toggle">
+      <div className="form-field">
+        <label htmlFor="reservationDate" className="field-label">Date & Time</label>
+        <input 
+          type="datetime-local"
+          id="reservationDate"
+          name="reservationDate"
+          min={getMinDateTime()}
+          value={formData.reservationDate || getDefaultTime()}
+          onChange={handleChange}
+          className={`date-picker ${errors.reservationDate ? 'input-error' : ''}`}
+        />
+        {errors.reservationDate && <div className="error-message">{errors.reservationDate}</div>}
+      </div>
+      
+      <div className="toggle-section">
+        <div className="switch-field">
+          <span className="switch-label">Hotel Guest</span>
+          <label className="switch">
             <input 
               type="checkbox"
               name="isHotelGuest"
               checked={formData.isHotelGuest}
               onChange={handleChange}
             />
-            <span className="toggle-slider"></span>
-            <span className="toggle-label">Hotel Guest</span>
+            <span className="slider"></span>
           </label>
         </div>
         
-        <div className="toggle-field">
-          <label className="toggle">
+        <div className="switch-field">
+          <span className="switch-label">Meal Deducted</span>
+          <label className="switch">
             <input 
               type="checkbox"
               name="mealDeducted"
               checked={formData.mealDeducted}
               onChange={handleChange}
             />
-            <span className="toggle-slider"></span>
-            <span className="toggle-label">Meal Deducted</span>
+            <span className="slider"></span>
           </label>
         </div>
       </div>
       
       {formData.isHotelGuest && (
-        <div className="form-field">
+        <div className="form-field room-number-field">
+          <label htmlFor="roomNumber" className="field-label">Room Number</label>
           <input 
             type="text"
             id="roomNumber"
             name="roomNumber"
             value={formData.roomNumber}
             onChange={handleChange}
-            className={errors.roomNumber ? 'error' : ''}
-            placeholder=" "
+            className={errors.roomNumber ? 'input-error' : ''}
+            placeholder="Enter room number"
           />
-          <label htmlFor="roomNumber">Room Number</label>
-          {errors.roomNumber && <div className="field-error">{errors.roomNumber}</div>}
+          {errors.roomNumber && <div className="error-message">{errors.roomNumber}</div>}
         </div>
       )}
       
       <div className="form-actions">
-        <button type="button" className="btn-cancel" onClick={onCancel}>
+        <button type="button" className="btn-secondary" onClick={onCancel}>
           Cancel
         </button>
-        <button type="submit" className="btn-submit">
-          Confirm Reservation
+        <button type="submit" className="btn-primary blue-button">
+          Create Reservation
         </button>
       </div>
     </form>

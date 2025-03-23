@@ -38,26 +38,42 @@
   width: 100%;
 }
 
-/* Make each table item a consistent size */
+/* Table status styling */
 .table-item {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #2c3e50;
-  border-radius: 4px;
-  padding: 5px;
-  height: 50px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  border: 1px solid #34495e;
-  /* Ensure consistent width/height ratio */
-  aspect-ratio: 1.5 / 1;
+  transition: all 0.3s ease;
+  position: relative;
+  background-color: #607dff; /* Default color for available tables */
 }
 
 .table-item:hover {
   transform: translateY(-2px);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-  background-color: #34495e;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-item.confirmed {
+  background-color: #3e8540; /* Green for confirmed reservations */
+  color: white;
+  border-color: #388E3C;
+}
+
+.table-item.pending {
+  background-color: #FF9800; /* Orange for pending reservations */
+  color: white;
+  border-color: #F57C00;
+}
+
+/* Make sure the text is visible on colored backgrounds */
+.table-item.confirmed .table-number,
+.table-item.pending .table-number {
+  color: white;
+  font-weight: bold;
 }
 
 .table-number {
@@ -259,4 +275,38 @@
 
 .edit-btn:hover {
   background-color: #219653;
+}
+
+/* Add a legend for the table colors */
+.tables-legend {
+  display: flex;
+  margin-bottom: 20px;
+  gap: 20px;
+  justify-content: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 4px;
+}
+
+.legend-color.available {
+  background-color: #f4f4f4;
+  border: 1px solid #ddd;
+}
+
+.legend-color.confirmed {
+  background-color: #4CAF50;
+}
+
+.legend-color.pending {
+  background-color: #FF9800;
 } 

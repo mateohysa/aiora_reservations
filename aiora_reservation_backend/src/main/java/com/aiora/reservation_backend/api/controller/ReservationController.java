@@ -10,17 +10,18 @@ import com.aiora.reservation_backend.service.ReservationService;
 import com.aiora.reservation_backend.service.RestaurantService;
 import com.aiora.reservation_backend.service.UserService;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/api/v1/restaurants/{restaurantId}/reservations")
@@ -162,6 +163,41 @@ public class ReservationController {
     
         return ResponseEntity.ok(stats);
     }
+
+    @GetMapping("/stats/today")
+    public ResponseEntity<Map<String, Integer>> getTodayReservationStats(@PathVariable Long restaurantId) {
+        Map<String, Integer> stats = new HashMap<>();
+        
+        // Get current date (start of day and end of day)
+        LocalDateTime startOfDay = LocalDateTime.now().with(LocalTime.MIN);
+        LocalDateTime endOfDay = LocalDateTime.now().with(LocalTime.MAX);
+        
+        // Get all reservations for the restaurant for today
+        List<Reservation> reservations = reservationService.getReservationsByRestaurant(restaurantId);
+        List<Reservation> todayReservations = reservations.stream()
+            .filter(r -> {
+                LocalDateTime reservationDate = r.getReservationDate();
+                return !reservationDate.isBefore(startOfDay) && !reservationDate.isAfter(endOfDay);
+            })
+            .collect(Collectors.toList());
+        
+        // Count total for today
+        stats.put("totalReservations", todayReservations.size());
+        
+        // Count by status for today
+        int pendingCount = (int) todayReservations.stream()
+            .filter(r -> r.getReservationStatus() == Reservation.ReservationStatus.PENDING)
+            .count();
+        stats.put("pendingReservations", pendingCount);
+        
+        int confirmedCount = (int) todayReservations.stream()
+            .filter(r -> r.getReservationStatus() == Reservation.ReservationStatus.CONFIRMED)
+            .count();
+        stats.put("confirmedReservations", confirmedCount);
+        
+        return ResponseEntity.ok(stats);
+    }
+
     @GetMapping("/debug")
     public ResponseEntity<Map<String, String>> debugEndpoint(@PathVariable Long restaurantId) {
         Map<String, String> response = new HashMap<>();

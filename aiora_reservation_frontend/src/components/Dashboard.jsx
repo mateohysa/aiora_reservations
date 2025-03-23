@@ -37,7 +37,7 @@ const Dashboard = () => {
           
           // Fetch reservation stats
           try {
-            const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
+            const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats/today`);
             stats[restaurantId] = {
               pending: statsResponse.pendingReservations || 0,
               confirmed: statsResponse.confirmedReservations || 0,
@@ -229,7 +229,7 @@ const Dashboard = () => {
             
             // Fetch reservation stats
             try {
-              const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
+              const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats/today`);
               stats[restaurantId] = {
                 pending: statsResponse.pendingReservations || 0,
                 confirmed: statsResponse.confirmedReservations || 0,
@@ -356,7 +356,7 @@ const Dashboard = () => {
                       className="view-all-btn" 
                       onClick={() => handleViewAll(restaurant.restaurantId, 'PENDING')}
                     >
-                      View all
+                    
                     </button>
                   )}
                 </div>
@@ -376,7 +376,7 @@ const Dashboard = () => {
                       className="view-all-btn" 
                       onClick={() => handleViewAll(restaurant.restaurantId, 'CONFIRMED')}
                     >
-                      View all
+                    
                     </button>
                   )}
                 </div>

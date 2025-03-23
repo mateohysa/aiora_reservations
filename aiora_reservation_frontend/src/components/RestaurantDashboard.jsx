@@ -38,9 +38,9 @@ const RestaurantDashboard = () => {
       const restaurantResponse = await fetchWithAuth(`/restaurants/${restaurantId}`);
       setRestaurant(restaurantResponse);
       
-      // Fetch reservation stats
+      // Fetch reservation stats for TODAY
       try {
-        const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
+        const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats/today`);
         setReservationStats({
           pending: statsResponse.pendingReservations || 0,
           confirmed: statsResponse.confirmedReservations || 0,
@@ -134,20 +134,37 @@ const RestaurantDashboard = () => {
     // useEffect will refetch data when currentPage changes
   };
 
-  // Generate table layout based on restaurant capacity
+  // Generate table layout based on restaurant capacity and reservation stats
   const generateTables = () => {
     // Always generate 60 tables for both restaurants
     const tableCount = 60;
     
-    return Array.from({ length: tableCount }, (_, i) => (
-      <div 
-        key={i}
-        className="table-item"
-        onClick={() => handleTableClick(i + 1)}
-      >
-        <span className="table-number">Table {i + 1}</span>
-      </div>
-    ));
+    // Get the number of confirmed and pending reservations for today
+    const confirmedCount = reservationStats.confirmed || 0;
+    const pendingCount = reservationStats.pending || 0;
+    
+    return Array.from({ length: tableCount }, (_, i) => {
+      // Determine table status and corresponding CSS class
+      let tableStatus = "available"; // Default - no special class
+      
+      if (i < confirmedCount) {
+        // First N tables are confirmed (green)
+        tableStatus = "confirmed";
+      } else if (i < confirmedCount + pendingCount) {
+        // Next M tables are pending (orange)
+        tableStatus = "pending";
+      }
+      
+      return (
+        <div 
+          key={i}
+          className={`table-item ${tableStatus}`}
+          onClick={() => handleTableClick(i + 1)}
+        >
+          <span className="table-number">Table {i + 1}</span>
+        </div>
+      );
+    });
   };
 
   const handleViewReservation = (reservation, e) => {

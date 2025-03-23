@@ -1,0 +1,266 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #1e293b;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+  padding: 1.5rem;
+  position: relative;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.modal-close:hover {
+  color: #e2e8f0;
+}
+
+.modal-title {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #e2e8f0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.reservation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 4px;
+  color: #ecf0f1;
+  font-size: 0.875rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+}
+
+.form-field input:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+.form-field input.input-error {
+  border-color: #ef4444;
+}
+
+.form-field input:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.error-message {
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+
+/* Toggle section */
+.toggle-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.switch-field {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.switch-label {
+  font-size: 0.875rem;
+  color: #e2e8f0;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #334155;
+  transition: 0.3s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #e2e8f0;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #3498db;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #3498db;
+}
+
+input:checked + .slider:before {
+  transform: translateX(16px);
+}
+
+input:disabled + .slider {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Status buttons */
+.status-selection {
+  margin-bottom: 0.5rem;
+}
+
+.status-label {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 0.5rem;
+}
+
+.status-buttons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid #334155;
+  background-color: #1e293b;
+  color: #e2e8f0;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.status-btn:hover:not(:disabled) {
+  border-color: #64748b;
+}
+
+.status-btn.active {
+  border-color: transparent;
+}
+
+.status-btn.active.pending {
+  background-color: #f59e0b;
+  color: #1f2937;
+}
+
+.status-btn.active.confirmed {
+  background-color: #10b981;
+  color: #1f2937;
+}
+
+.status-btn.active.cancelled {
+  background-color: #ef4444;
+  color: #f9fafb;
+}
+
+.status-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Form actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.cancel-btn, .edit-btn, .save-btn {
+  padding: 0.625rem 1.25rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.2s;
+}
+
+.cancel-btn {
+  background-color: #475569;
+  color: #ecf0f1;
+}
+
+.cancel-btn:hover {
+  background-color: #334155;
+}
+
+.edit-btn, .save-btn {
+  background-color: #3498db;
+  color: #ecf0f1;
+}
+
+.edit-btn:hover, .save-btn:hover {
+  background-color: #2980b9;
+}
+
+.modal-loading, .modal-error {
+  text-align: center;
+  padding: 2rem;
+  font-size: 1rem;
+}
+
+.modal-error {
+  color: #ef4444;
+}
+
+.room-number-field {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+} 

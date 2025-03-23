@@ -75,28 +75,45 @@ export const fetchWithAuth = async (endpoint, options = {}) => {
   const token = localStorage.getItem('token');
   
   if (!token) {
+    // Redirect to signin if no token exists
+    window.location.href = '/signin';
     throw new Error('No authentication token found');
   }
   
-  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      ...options.headers,
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // Include cookies with each request
-  });
-  
-  if (response.status === 401) {
-    // Token expired or invalid
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = '/signin';
-    throw new Error('Session expired. Please sign in again.');
+  try {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        ...options.headers,
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Include cookies with each request
+    });
+    
+    if (response.status === 401) {
+      // Token expired or invalid
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/signin';
+      throw new Error('Session expired. Please sign in again.');
+    }
+    
+    return handleResponse(response);
+  } catch (error) {
+    // Handle network errors (connection refused, server down, etc.)
+    console.error('API connection error:', error);
+    
+    // Only redirect for network/connection errors, not for other API errors
+    if (error.name === 'TypeError' && error.message.includes('Failed to fetch')) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/signin';
+      throw new Error('Unable to connect to the server. Please sign in again.');
+    }
+    
+    throw error; // Re-throw the error for the calling component to handle
   }
-  
-  return handleResponse(response);
 };
 
 // Mock data for development

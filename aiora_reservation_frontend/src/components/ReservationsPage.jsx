@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../services/api';
 import './ReservationsPage.css';
+import ReservationModal from './ReservationModal';
 
 const ReservationsPage = () => {
   const navigate = useNavigate();
@@ -26,6 +27,11 @@ const ReservationsPage = () => {
   
   // State for restaurants dropdown
   const [restaurants, setRestaurants] = useState([]);
+
+  // Add these state variables inside your component
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('view'); // 'view', 'edit', or 'create'
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   // Load restaurants on component mount
   useEffect(() => {
@@ -177,13 +183,75 @@ const ReservationsPage = () => {
   };
 
   // View reservation details
-  const handleViewReservation = (restaurantId, reservationId) => {
-    navigate(`/restaurants/${restaurantId}/reservations/${reservationId}`);
+  const handleViewReservation = (restaurantId, reservationId, restaurantName) => {
+    setSelectedReservation({
+      restaurantId,
+      reservationId,
+      restaurantName
+    });
+    setModalMode('view');
+    setModalOpen(true);
   };
 
   // Edit reservation
-  const handleEditReservation = (restaurantId, reservationId) => {
-    navigate(`/restaurants/${restaurantId}/reservations/${reservationId}/edit`);
+  const handleEditReservation = (restaurantId, reservationId, restaurantName) => {
+    setSelectedReservation({
+      restaurantId,
+      reservationId,
+      restaurantName
+    });
+    setModalMode('edit');
+    setModalOpen(true);
+  };
+
+  const handleModalSubmit = async (formData, mode) => {
+    try {
+      console.log('Modal submit with mode:', mode, 'and data:', formData);
+      
+      if (mode === 'view') {
+        // Switch to edit mode when "Edit" is clicked in view mode
+        setModalMode('edit');
+        return;
+      }
+      
+      // Add explicit debug logging
+      console.log('Updating reservation status to:', formData.reservationStatus);
+      
+      // For edit mode, update the reservation
+      const response = await fetchWithAuth(`/restaurants/${selectedReservation.restaurantId}/reservations/${selectedReservation.reservationId}`, {
+        method: 'PUT',
+        body: JSON.stringify({
+          ...formData,
+          // Explicitly ensure status is included
+          reservationStatus: formData.reservationStatus
+        })
+      });
+      
+      console.log('Update response:', response);
+      
+      // Close the modal
+      setModalOpen(false);
+      
+      // Force a refresh of reservations by updating both pages and filters
+      // This should trigger the useEffect to fetch new data
+      
+      // 1. Force a change in filters to trigger useEffect
+      const currentTime = Date.now();
+      setFilters(prev => ({ ...prev, _refresh: currentTime }));
+      
+      // 2. Also forcing a page refresh as a backup
+      // Make sure we're still on the same page by setting it to its current value
+      setCurrentPage(currentPage);
+      
+      // As a last resort, if needed, we can force a page reload
+      // window.location.reload();
+    } catch (err) {
+      console.error('Error updating reservation:', err);
+      // Add more detailed error handling
+      if (err instanceof ReferenceError) {
+        console.error('Reference error detected:', err.message);
+      }
+    }
   };
 
   if (loading && reservations.length === 0) {
@@ -316,13 +384,21 @@ const ReservationsPage = () => {
                       <td className="action-buttons">
                         <button 
                           className="view-btn"
-                          onClick={() => handleViewReservation(reservation.restaurantId, reservation.reservationId)}
+                          onClick={() => handleViewReservation(
+                            reservation.restaurantId, 
+                            reservation.reservationId,
+                            reservation.restaurantName
+                          )}
                         >
                           View
                         </button>
                         <button 
                           className="edit-btn"
-                          onClick={() => handleEditReservation(reservation.restaurantId, reservation.reservationId)}
+                          onClick={() => handleEditReservation(
+                            reservation.restaurantId, 
+                            reservation.reservationId,
+                            reservation.restaurantName
+                          )}
                         >
                           Edit
                         </button>
@@ -367,6 +443,19 @@ const ReservationsPage = () => {
           </div>
         )}
       </div>
+
+      {/* Modal Component */}
+      {modalOpen && (
+        <ReservationModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          reservationId={selectedReservation?.reservationId}
+          restaurantId={selectedReservation?.restaurantId}
+          restaurantName={selectedReservation?.restaurantName}
+          mode={modalMode}
+          onSubmit={handleModalSubmit}
+        />
+      )}
     </div>
   );
 };

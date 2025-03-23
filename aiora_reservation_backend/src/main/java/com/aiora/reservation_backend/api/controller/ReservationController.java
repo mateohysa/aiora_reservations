@@ -179,7 +179,14 @@ public class ReservationController {
         reservation.setIsHotelGuest(request.getIsHotelGuest());
         reservation.setMealDeducted(request.getMealDeducted());
         reservation.setGuestCount(request.getGuestCount());
-        reservation.setReservationStatus(Reservation.ReservationStatus.CONFIRMED);
+        
+        // Use status from request if provided, otherwise set to PENDING
+        if (request.getReservationStatus() != null) {
+            reservation.setReservationStatus(request.getReservationStatus());
+        } else {
+            reservation.setReservationStatus(Reservation.ReservationStatus.PENDING);
+        }
+        
         return reservation;
     }
     

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../services/api';
 import './Dashboard.css';
+import ReservationModal from './ReservationModal';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -12,6 +13,9 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('view');
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -169,6 +173,132 @@ const Dashboard = () => {
     fetchPagedData();
   };
 
+  const handleViewReservation = (reservation) => {
+    setSelectedReservation({
+      reservationId: reservation.id,
+      restaurantId: reservation.restaurantId,
+      restaurantName: reservation.restaurantName
+    });
+    setModalMode('view');
+    setModalOpen(true);
+  };
+
+  const handleEditReservation = (reservation) => {
+    setSelectedReservation({
+      reservationId: reservation.id,
+      restaurantId: reservation.restaurantId,
+      restaurantName: reservation.restaurantName
+    });
+    setModalMode('edit');
+    setModalOpen(true);
+  };
+
+  const handleModalSubmit = async (formData, mode) => {
+    if (mode === 'view') {
+      // Switch to edit mode when "Edit" is clicked in view mode
+      setModalMode('edit');
+      return;
+    }
+    
+    try {
+      // For edit mode, update the reservation
+      await fetchWithAuth(`/restaurants/${selectedReservation.restaurantId}/reservations/${selectedReservation.reservationId}`, {
+        method: 'PUT',
+        body: JSON.stringify(formData)
+      });
+      
+      setModalOpen(false);
+      
+      // Refresh the data to show updated reservation
+      const fetchPagedData = async () => {
+        try {
+          setLoading(true);
+          
+          // Fetch all restaurants
+          const restaurantsResponse = await fetchWithAuth('/restaurants');
+          setRestaurants(restaurantsResponse);
+          
+          // Initialize stats object
+          const stats = {};
+          // Initialize allRecentReservations OUTSIDE the loop
+          const allRecentReservations = [];
+          
+          // Fetch reservation stats and recent reservations for each restaurant
+          for (const restaurant of restaurantsResponse) {
+            const restaurantId = restaurant.restaurantId;
+            
+            // Fetch reservation stats
+            try {
+              const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
+              stats[restaurantId] = {
+                pending: statsResponse.pendingReservations || 0,
+                confirmed: statsResponse.confirmedReservations || 0,
+                total: statsResponse.totalReservations || 0
+              };
+            } catch (err) {
+              console.error(`Failed to fetch stats for restaurant ${restaurantId}:`, err);
+              stats[restaurantId] = { pending: 0, confirmed: 0, total: 0 };
+            }
+            
+            // Get recent reservations for restaurant 2 and 3
+            if (restaurantId === 2 || restaurantId === 3) {
+              try {
+                console.log(`Fetching reservations for restaurant ${restaurantId}`);
+                // Add pagination parameters to the API call
+                const recentResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/recent?page=${currentPage}&size=10`);
+                
+                if (recentResponse.reservations && recentResponse.reservations.length > 0) {
+                  const formattedReservations = recentResponse.reservations.map(res => ({
+                    id: res.reservationId,
+                    restaurantId: res.restaurantId,
+                    restaurantName: res.restaurantName,
+                    guestName: res.guestName,
+                    date: res.reservationDate,
+                    status: res.reservationStatus,
+                    guestCount: res.guestCount,
+                    isHotelGuest: res.isHotelGuest,
+                    roomNumber: res.roomNumber
+                  }));
+                  
+                  // Add to our collection of all reservations
+                  allRecentReservations.push(...formattedReservations);
+                }
+                
+                // Store pagination metadata
+                if (recentResponse.totalPages) {
+                  setTotalPages(recentResponse.totalPages);
+                }
+                if (recentResponse.currentPage !== undefined) {
+                  setCurrentPage(recentResponse.currentPage);
+                }
+              } catch (err) {
+                console.error(`Failed to fetch recent reservations for restaurant ${restaurantId}:`, err);
+              }
+            }
+          }
+          
+          // Sort the combined list of reservations
+          allRecentReservations.sort((a, b) => {
+            return new Date(b.date) - new Date(a.date);
+          });
+          
+          // At the end of the loop, set all reservations collected from both restaurants
+          setRecentReservations(allRecentReservations);
+          setReservationStats(stats);
+          setLoading(false);
+        } catch (err) {
+          console.error('Error fetching dashboard data:', err);
+          setError('Failed to load dashboard data. Please try again later.');
+          setLoading(false);
+        }
+      };
+      
+      fetchPagedData();
+    } catch (err) {
+      console.error('Error updating reservation:', err);
+    }
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading dashboard...</div>;
   }
@@ -259,45 +389,54 @@ const Dashboard = () => {
       <div className="recent-reservations">
         <h2>Recent Reservations</h2>
         {recentReservations.length > 0 ? (
-          <div className="reservation-list">
-            {recentReservations.map(reservation => (
-              <div key={reservation.id} className="reservation-item">
-                <div className="reservation-header">
-                  <h3>{reservation.restaurantName}</h3>
-                  <span className={`status-badge ${reservation.status.toLowerCase()}`}>
-                    {reservation.status}
-                  </span>
-                </div>
-                <div className="reservation-details">
-                  <div className="detail-group">
-                    <span className="detail-label">Guest:</span>
-                    <span className="detail-value">{reservation.guestName}</span>
-                  </div>
-                  <div className="detail-group">
-                    <span className="detail-label">Date:</span>
-                    <span className="detail-value">
-                      {new Date(reservation.date).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="detail-group">
-                    <span className="detail-label">Party Size:</span>
-                    <span className="detail-value">{reservation.guestCount} guests</span>
-                  </div>
-                  {reservation.isHotelGuest && reservation.roomNumber && (
-                    <div className="detail-group">
-                      <span className="detail-label">Room:</span>
-                      <span className="detail-value">{reservation.roomNumber}</span>
-                    </div>
-                  )}
-                </div>
-                <button 
-                  className="view-details-btn"
-                  onClick={() => navigate(`/restaurants/${reservation.restaurantId}/reservations/${reservation.id}`)}
-                >
-                  View Details
-                </button>
-              </div>
-            ))}
+          <div className="reservations-table-container">
+            <table className="reservations-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Restaurant</th>
+                  <th>Guest</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Party Size</th>
+                  <th>Room</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentReservations.map(reservation => (
+                  <tr key={reservation.id}>
+                    <td>{reservation.id}</td>
+                    <td>{reservation.restaurantName}</td>
+                    <td>{reservation.guestName}</td>
+                    <td>{new Date(reservation.date).toLocaleString()}</td>
+                    <td>
+                      <span className={`status-badge ${reservation.status.toLowerCase()}`}>
+                        {reservation.status}
+                      </span>
+                    </td>
+                    <td>{reservation.guestCount}</td>
+                    <td>{reservation.isHotelGuest ? reservation.roomNumber : 'N/A'}</td>
+                    <td>
+                      <div className="action-buttons">
+                        <button 
+                          className="view-btn"
+                          onClick={() => handleViewReservation(reservation)}
+                        >
+                          View
+                        </button>
+                        <button 
+                          className="edit-btn"
+                          onClick={() => handleEditReservation(reservation)}
+                        >
+                          Edit
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : (
           <div className="placeholder-message">
@@ -328,6 +467,17 @@ const Dashboard = () => {
           </div>
         )}
       </div>
+      {modalOpen && (
+        <ReservationModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          reservationId={selectedReservation?.reservationId}
+          restaurantId={selectedReservation?.restaurantId}
+          restaurantName={selectedReservation?.restaurantName}
+          mode={modalMode}
+          onSubmit={handleModalSubmit}
+        />
+      )}
     </div>
   );
 };

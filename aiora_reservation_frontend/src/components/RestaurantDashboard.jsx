@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../services/api';
 import ReservationForm from './ReservationForm';
+import ReservationModal from './ReservationModal';
 import './Dashboard.css'; // Reuse existing styles
 import './RestaurantDashboard.css'; // Add new styles for tables
 
@@ -21,72 +22,75 @@ const RestaurantDashboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [showReservationForm, setShowReservationForm] = useState(false);
   const [formError, setFormError] = useState(null);
+  const [viewEditModalOpen, setViewEditModalOpen] = useState(false);
+  const [modalMode, setModalMode] = useState('view');
+  const [selectedReservation, setSelectedReservation] = useState(null);
 
   useEffect(() => {
-    const fetchRestaurantData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch restaurant details
-        const restaurantResponse = await fetchWithAuth(`/restaurants/${restaurantId}`);
-        setRestaurant(restaurantResponse);
-        
-        // Fetch reservation stats
-        try {
-          const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
-          setReservationStats({
-            pending: statsResponse.pendingReservations || 0,
-            confirmed: statsResponse.confirmedReservations || 0,
-            total: statsResponse.totalReservations || 0
-          });
-        } catch (err) {
-          console.error(`Failed to fetch stats for restaurant ${restaurantId}:`, err);
-          setReservationStats({ pending: 0, confirmed: 0, total: 0 });
-        }
-        
-        // Fetch recent reservations
-        try {
-          const recentResponse = await fetchWithAuth(
-            `/restaurants/${restaurantId}/reservations/recent?page=${currentPage}&size=10`
-          );
-          
-          if (recentResponse.reservations && recentResponse.reservations.length > 0) {
-            const formattedReservations = recentResponse.reservations.map(res => ({
-              id: res.reservationId,
-              restaurantId: res.restaurantId,
-              restaurantName: res.restaurantName,
-              guestName: res.guestName,
-              date: res.reservationDate,
-              status: res.reservationStatus,
-              guestCount: res.guestCount,
-              isHotelGuest: res.isHotelGuest,
-              roomNumber: res.roomNumber
-            }));
-            
-            setRecentReservations(formattedReservations);
-          }
-          
-          // Store pagination metadata
-          if (recentResponse.totalPages) {
-            setTotalPages(recentResponse.totalPages);
-          }
-          if (recentResponse.currentPage !== undefined) {
-            setCurrentPage(recentResponse.currentPage);
-          }
-        } catch (err) {
-          console.error(`Failed to fetch recent reservations for restaurant ${restaurantId}:`, err);
-        }
-        
-        setLoading(false);
-      } catch (err) {
-        console.error('Error fetching restaurant data:', err);
-        setError('Failed to load restaurant data. Please try again later.');
-        setLoading(false);
-      }
-    };
-
     fetchRestaurantData();
   }, [restaurantId, currentPage]);
+
+  const fetchRestaurantData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch restaurant details
+      const restaurantResponse = await fetchWithAuth(`/restaurants/${restaurantId}`);
+      setRestaurant(restaurantResponse);
+      
+      // Fetch reservation stats
+      try {
+        const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
+        setReservationStats({
+          pending: statsResponse.pendingReservations || 0,
+          confirmed: statsResponse.confirmedReservations || 0,
+          total: statsResponse.totalReservations || 0
+        });
+      } catch (err) {
+        console.error(`Failed to fetch stats for restaurant ${restaurantId}:`, err);
+        setReservationStats({ pending: 0, confirmed: 0, total: 0 });
+      }
+      
+      // Fetch recent reservations
+      try {
+        const recentResponse = await fetchWithAuth(
+          `/restaurants/${restaurantId}/reservations/recent?page=${currentPage}&size=10`
+        );
+        
+        if (recentResponse.reservations && recentResponse.reservations.length > 0) {
+          const formattedReservations = recentResponse.reservations.map(res => ({
+            id: res.reservationId,
+            restaurantId: res.restaurantId,
+            restaurantName: res.restaurantName,
+            guestName: res.guestName,
+            date: res.reservationDate,
+            status: res.reservationStatus,
+            guestCount: res.guestCount,
+            isHotelGuest: res.isHotelGuest,
+            roomNumber: res.roomNumber
+          }));
+          
+          setRecentReservations(formattedReservations);
+        }
+        
+        // Store pagination metadata
+        if (recentResponse.totalPages) {
+          setTotalPages(recentResponse.totalPages);
+        }
+        if (recentResponse.currentPage !== undefined) {
+          setCurrentPage(recentResponse.currentPage);
+        }
+      } catch (err) {
+        console.error(`Failed to fetch recent reservations for restaurant ${restaurantId}:`, err);
+      }
+      
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching restaurant data:', err);
+      setError('Failed to load restaurant data. Please try again later.');
+      setLoading(false);
+    }
+  };
 
   const handleNewReservation = () => {
     setShowReservationForm(true);
@@ -117,46 +121,10 @@ const RestaurantDashboard = () => {
       setShowReservationForm(false);
       
       // Refetch data to show the new reservation
-      refreshReservationData();
-      
+      fetchRestaurantData();
     } catch (error) {
       console.error('Error creating reservation:', error);
       setFormError(error.message || 'Failed to create reservation. Please try again.');
-    }
-  };
-  
-  const refreshReservationData = async () => {
-    try {
-      // Refetch recent reservations
-      const recentResponse = await fetchWithAuth(
-        `/restaurants/${restaurantId}/reservations/recent?page=${currentPage}&size=10`
-      );
-      
-      if (recentResponse.reservations) {
-        const formattedReservations = recentResponse.reservations.map(res => ({
-          id: res.reservationId,
-          restaurantId: res.restaurantId,
-          restaurantName: res.restaurantName,
-          guestName: res.guestName,
-          date: res.reservationDate,
-          status: res.reservationStatus,
-          guestCount: res.guestCount,
-          isHotelGuest: res.isHotelGuest,
-          roomNumber: res.roomNumber
-        }));
-        
-        setRecentReservations(formattedReservations);
-      }
-      
-      // Refresh stats
-      const statsResponse = await fetchWithAuth(`/restaurants/${restaurantId}/reservations/stats`);
-      setReservationStats({
-        pending: statsResponse.pendingReservations || 0,
-        confirmed: statsResponse.confirmedReservations || 0,
-        total: statsResponse.totalReservations || 0
-      });
-    } catch (error) {
-      console.error('Error refreshing reservation data:', error);
     }
   };
   
@@ -180,6 +148,65 @@ const RestaurantDashboard = () => {
         <span className="table-number">Table {i + 1}</span>
       </div>
     ));
+  };
+
+  const handleViewReservation = (reservation, e) => {
+    // Prevent any default navigation
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation(); 
+    }
+    
+    console.log("Opening view modal for reservation:", reservation.id);
+    setSelectedReservation({
+      reservationId: reservation.id,
+      restaurantId: reservation.restaurantId,
+      restaurantName: reservation.restaurantName
+    });
+    setModalMode('view');
+    setViewEditModalOpen(true);
+  };
+
+  const handleEditReservation = (reservation, e) => {
+    // Prevent any default navigation
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    console.log("Opening edit modal for reservation:", reservation.id);
+    setSelectedReservation({
+      reservationId: reservation.id,
+      restaurantId: reservation.restaurantId,
+      restaurantName: reservation.restaurantName
+    });
+    setModalMode('edit');
+    setViewEditModalOpen(true);
+  };
+
+  const handleModalSubmit = async (formData, mode) => {
+    console.log("Modal submit with mode:", mode, "and data:", formData);
+    
+    if (mode === 'view') {
+      // Switch to edit mode when "Edit" is clicked in view mode
+      setModalMode('edit');
+      return;
+    }
+    
+    try {
+      // For edit mode, update the reservation
+      await fetchWithAuth(`/restaurants/${selectedReservation.restaurantId}/reservations/${selectedReservation.reservationId}`, {
+        method: 'PUT',
+        body: JSON.stringify(formData)
+      });
+      
+      setViewEditModalOpen(false);
+      
+      // Refresh the data
+      fetchRestaurantData();
+    } catch (err) {
+      console.error('Error updating reservation:', err);
+    }
   };
 
   if (loading) {
@@ -258,12 +285,20 @@ const RestaurantDashboard = () => {
                     </div>
                   )}
                 </div>
-                <button 
-                  className="view-details-btn"
-                  onClick={() => navigate(`/restaurants/${reservation.restaurantId}/reservations/${reservation.id}`)}
-                >
-                  View Details
-                </button>
+                <div className="reservation-actions">
+                  <button 
+                    className="view-details-btn"
+                    onClick={(e) => handleViewReservation(reservation, e)}
+                  >
+                    View Details
+                  </button>
+                  <button 
+                    className="edit-btn"
+                    onClick={(e) => handleEditReservation(reservation, e)}
+                  >
+                    Edit
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -315,6 +350,19 @@ const RestaurantDashboard = () => {
             />
           </div>
         </div>
+      )}
+      
+      {/* View/Edit Reservation Modal */}
+      {viewEditModalOpen && (
+        <ReservationModal
+          isOpen={viewEditModalOpen}
+          onClose={() => setViewEditModalOpen(false)}
+          reservationId={selectedReservation?.reservationId}
+          restaurantId={selectedReservation?.restaurantId}
+          restaurantName={selectedReservation?.restaurantName}
+          mode={modalMode}
+          onSubmit={handleModalSubmit}
+        />
       )}
     </div>
   );

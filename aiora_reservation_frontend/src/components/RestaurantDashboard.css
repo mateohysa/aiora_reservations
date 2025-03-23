@@ -225,4 +225,38 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   width: 100%;
   min-height: 200px; /* Minimum height for recent reservations */
+}
+
+/* Add this CSS to your RestaurantDashboard.css file */
+.reservation-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.view-details-btn, .edit-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.view-details-btn {
+  background-color: #3498db;
+  color: #ffffff;
+}
+
+.view-details-btn:hover {
+  background-color: #2980b9;
+}
+
+.edit-btn {
+  background-color: #27ae60;
+  color: #ffffff;
+}
+
+.edit-btn:hover {
+  background-color: #219653;
 } 

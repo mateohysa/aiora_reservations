@@ -7,6 +7,9 @@ import { authService } from './services/api';
 import './App.css';
 import RestaurantDashboard from './components/RestaurantDashboard';
 import ReservationsPage from './components/ReservationsPage';
+// Temporarily comment out these imports until the files are properly created
+// import ReservationDetails from './components/ReservationDetails';
+// import ReservationEdit from './components/ReservationEdit';
 
 // Protected route component
 const ProtectedRoute = ({ children }) => {
@@ -51,26 +54,6 @@ function App() {
               element={
                 <ProtectedRoute>
                   <ReservationsPage />
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route
-              path="/restaurants/:restaurantId/reservations/:reservationId"
-              element={
-                <ProtectedRoute>
-                  {/* Reservation Details Component - you'll need to create this */}
-                  <div>Reservation Details Page</div>
-                </ProtectedRoute>
-              }
-            />
-            
-            <Route
-              path="/restaurants/:restaurantId/reservations/:reservationId/edit"
-              element={
-                <ProtectedRoute>
-                  {/* Reservation Edit Component - you'll need to create this */}
-                  <div>Edit Reservation Page</div>
                 </ProtectedRoute>
               }
             />

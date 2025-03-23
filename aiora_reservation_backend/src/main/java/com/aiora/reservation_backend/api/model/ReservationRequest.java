@@ -1,5 +1,6 @@
 package com.aiora.reservation_backend.api.model;
 
+import com.aiora.reservation_backend.model.Reservation;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -24,6 +25,18 @@ public class ReservationRequest {
     
     @NotNull(message = "User ID is required")
     private Long userId;
+    
+    // Add this field to ReservationRequest class
+    private Reservation.ReservationStatus reservationStatus;
+
+    // Add getter/setter for the new field
+    public Reservation.ReservationStatus getReservationStatus() {
+        return reservationStatus;
+    }
+
+    public void setReservationStatus(Reservation.ReservationStatus reservationStatus) {
+        this.reservationStatus = reservationStatus;
+    }
     
     // Getters and setters
     public LocalDateTime getReservationDate() {

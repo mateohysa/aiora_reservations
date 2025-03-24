@@ -135,3 +135,18 @@ input, select, textarea, button {
 input:focus, select:focus, textarea:focus, button:focus {
   box-shadow: 0 0 0 2px rgba(45, 136, 255, 0.5);
 }
+
+@media (max-width: 768px) {
+  .dashboard-loading,
+  .dashboard-error,
+  .loading-message,
+  .error-message,
+  .no-reservations-message {
+    padding: 15px;
+    font-size: 14px;
+  }
+  
+  .no-reservations-message p {
+    font-size: 16px;
+  }
+}

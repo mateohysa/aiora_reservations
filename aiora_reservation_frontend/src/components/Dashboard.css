@@ -454,3 +454,43 @@ nav, .navbar, header {
   font-size: 14px;
   color: #b3b3b3;
 }
+
+@media (max-width: 600px) {
+  .dashboard-container {
+    padding: 10px;
+  }
+  
+  .stats-container {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .stats-card {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  
+  .stats-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  
+  .header-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .reservations-table-container {
+    overflow-x: auto;
+    width: 100%;
+  }
+  
+  .reservations-table {
+    min-width: 800px; /* Ensure table can be scrolled horizontally */
+  }
+  
+  .pagination-controls {
+    flex-wrap: wrap;
+  }
+}

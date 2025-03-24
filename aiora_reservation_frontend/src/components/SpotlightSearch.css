@@ -196,3 +196,51 @@
   .spotlight-results::-webkit-scrollbar-thumb:hover {
     background-color: #3a3d46;
   }
+
+  @media (max-width: 768px) {
+    .spotlight-backdrop {
+      padding-top: 60px;
+    }
+    
+    .spotlight-container {
+      width: 95%;
+      max-width: 95%;
+    }
+    
+    .result-details {
+      flex-wrap: wrap;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .spotlight-backdrop {
+      padding-top: 30px;
+      align-items: flex-start;
+    }
+    
+    .spotlight-input-wrapper {
+      padding: 10px;
+    }
+    
+    .spotlight-input {
+      font-size: 14px;
+    }
+    
+    .result-item {
+      padding: 10px;
+    }
+    
+    .result-title {
+      font-size: 14px;
+    }
+    
+    .result-details {
+      font-size: 12px;
+      flex-direction: column;
+      gap: 3px;
+    }
+    
+    .result-details span:nth-child(even) {
+      display: none; /* Hide the bullet points on very small screens */
+    }
+  }

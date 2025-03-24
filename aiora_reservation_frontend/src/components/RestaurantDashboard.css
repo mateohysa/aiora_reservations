@@ -152,13 +152,57 @@
 
 @media (max-width: 768px) {
   .tables-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(6, 1fr);
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .header-buttons {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .table-item {
+    padding: 10px;
+  }
+  
+  .table-number {
+    font-size: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .tables-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  
+  .reservation-item {
+    padding: 10px;
+  }
+  
+  .reservation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+  
+  .reservation-details {
+    flex-direction: column;
+  }
+  
+  .reservation-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .view-details-btn, .edit-btn {
+    width: 100%;
+    margin-bottom: 5px;
   }
 }
 

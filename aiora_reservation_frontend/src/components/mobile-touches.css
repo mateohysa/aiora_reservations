@@ -1,0 +1,45 @@
+@media (max-width: 768px) {
+  /* Make all buttons larger and more touch-friendly */
+  button, 
+  .btn-primary, 
+  .btn-secondary,
+  .action-button,
+  .more-button,
+  .view-all-btn,
+  .pagination-btn,
+  .edit-btn,
+  .view-btn,
+  .cancel-btn,
+  .save-btn {
+    min-height: 44px; /* Apple recommended touch target size */
+    min-width: 44px;
+    padding: 10px 15px;
+  }
+  
+  /* Increase form input heights */
+  input,
+  select,
+  textarea {
+    height: 44px;
+    font-size: 16px; /* Prevents zoom on focus in iOS */
+  }
+  
+  /* Increase spacing between clickable elements */
+  .result-item,
+  .reservation-item,
+  tr,
+  .form-field {
+    margin-bottom: 8px;
+  }
+  
+  /* Ensure adequate spacing for toggle switches */
+  .switch {
+    height: 30px;
+    width: 50px;
+  }
+  
+  .slider:before {
+    height: 22px;
+    width: 22px;
+  }
+}

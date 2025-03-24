@@ -315,4 +315,54 @@
 
 .reservations-table tbody tr:hover {
   background-color: #3a3b3c;
+}
+
+@media (max-width: 768px) {
+  .filters-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .filter-actions {
+    position: static;
+    margin-top: 15px;
+    width: 100%;
+  }
+  
+  .clear-filters-btn {
+    width: 100%;
+  }
+  
+  .reservations-container {
+    padding: 10px;
+  }
+  
+  .reservations-header h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .action-buttons {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .view-btn, .edit-btn {
+    width: 100%;
+    text-align: center;
+  }
+  
+  .pagination-controls {
+    padding: 10px;
+  }
+  
+  .pagination-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+  
+  .pagination-info {
+    font-size: 12px;
+  }
 } 

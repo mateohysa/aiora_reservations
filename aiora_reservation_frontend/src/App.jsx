@@ -5,6 +5,7 @@ import Dashboard from './components/Dashboard';
 import Navbar from './components/Navbar';
 import { authService } from './services/api';
 import './App.css';
+import './components/mobile-touches.css';
 import RestaurantDashboard from './components/RestaurantDashboard';
 import ReservationsPage from './components/ReservationsPage';
 // Temporarily comment out these imports until the files are properly created
@@ -23,6 +24,31 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
+  function handleFormInputFocus() {
+    // Add to your main App component or wherever appropriate
+    useEffect(() => {
+      const inputs = document.querySelectorAll('input, textarea, select');
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      if (isIOS) {
+        const handleFocus = () => {
+          setTimeout(() => {
+            window.scrollTo(0, 0);
+          }, 100);
+        };
+        
+        inputs.forEach(input => {
+          input.addEventListener('focus', handleFocus);
+        });
+        
+        return () => {
+          inputs.forEach(input => {
+            input.removeEventListener('focus', handleFocus);
+          });
+        };
+      }
+    }, []);
+  }
   return (
     <Router>
       <div className="App dark-theme">

@@ -215,7 +215,7 @@ const ReservationModal = ({
             
             {/* Guest Name */}
             <div className="form-field">
-              <label htmlFor="guestName">Guest Name</label>
+              <label htmlFor="guestName"></label>
               <input
                 type="text"
                 id="guestName"
@@ -223,7 +223,7 @@ const ReservationModal = ({
                 value={formData.guestName}
                 onChange={handleChange}
                 className={formErrors.guestName ? 'input-error' : ''}
-                placeholder="Enter guest name"
+                placeholder={mode === 'view' || formData.guestName ? '' : "Enter guest name"}
                 disabled={mode === 'view'}
               />
               {formErrors.guestName && <div className="error-message">{formErrors.guestName}</div>}
@@ -240,6 +240,7 @@ const ReservationModal = ({
                 value={formData.guestCount}
                 onChange={handleChange}
                 className={formErrors.guestCount ? 'input-error' : ''}
+                placeholder={mode === 'view' ? '' : ""}
                 disabled={mode === 'view'}
               />
               {formErrors.guestCount && <div className="error-message">{formErrors.guestCount}</div>}
@@ -247,7 +248,7 @@ const ReservationModal = ({
             
             {/* Date & Time */}
             <div className="form-field">
-              <label htmlFor="reservationDate">Date & Time</label>
+              
               <input
                 type="datetime-local"
                 id="reservationDate"
@@ -255,6 +256,7 @@ const ReservationModal = ({
                 value={formData.reservationDate || getDefaultTime()}
                 onChange={handleChange}
                 className={formErrors.reservationDate ? 'input-error' : ''}
+                placeholder=""
                 disabled={mode === 'view'}
               />
               {formErrors.reservationDate && <div className="error-message">{formErrors.reservationDate}</div>}
@@ -316,7 +318,11 @@ const ReservationModal = ({
                 Cancel
               </button>
               {mode === 'view' ? (
-                <button type="button" className="edit-btn" onClick={() => onSubmit(formData, 'view')}>
+                <button type="button" className="edit-btn" onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onSubmit(formData, 'view');
+                }}>
                   Edit
                 </button>
               ) : (

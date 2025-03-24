@@ -32,6 +32,24 @@ public class GlobalReservationController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(responses);
     }
+    @GetMapping("/search")
+    public ResponseEntity<List<ReservationResponse>> searchReservations(
+            @RequestParam String query,
+            @RequestParam(required = false) Integer limit) {
+
+        // Default limit if not provided
+        int searchLimit = limit != null ? limit : 20;
+
+        // Call service method to search across all fields
+        List<Reservation> searchResults = reservationService.searchReservations(query, searchLimit);
+
+        // Convert to response DTOs
+        List<ReservationResponse> responseList = searchResults.stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<ReservationResponse> getReservationById(@PathVariable Long id) {

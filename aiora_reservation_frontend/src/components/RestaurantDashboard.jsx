@@ -5,6 +5,7 @@ import ReservationForm from './ReservationForm';
 import ReservationModal from './ReservationModal';
 import './Dashboard.css'; // Reuse existing styles
 import './RestaurantDashboard.css'; // Add new styles for tables
+import SpotlightSearch from './SpotlightSearch';
 
 // TableGrid component will be imported later
 // import TableGrid from './TableGrid';
@@ -25,6 +26,7 @@ const RestaurantDashboard = () => {
   const [viewEditModalOpen, setViewEditModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('view');
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     fetchRestaurantData();
@@ -156,13 +158,13 @@ const RestaurantDashboard = () => {
       }
       
       return (
-        <div 
-          key={i}
+      <div 
+        key={i}
           className={`table-item ${tableStatus}`}
-          onClick={() => handleTableClick(i + 1)}
-        >
-          <span className="table-number">Table {i + 1}</span>
-        </div>
+        onClick={() => handleTableClick(i + 1)}
+      >
+        <span className="table-number">Table {i + 1}</span>
+      </div>
       );
     });
   };
@@ -226,6 +228,16 @@ const RestaurantDashboard = () => {
     }
   };
 
+  const handleSelectReservation = (reservation) => {
+    setSelectedReservation({
+      reservationId: reservation.reservationId,
+      restaurantId: reservation.restaurantId,
+      restaurantName: reservation.restaurantName
+    });
+    setModalMode('view');
+    setViewEditModalOpen(true);
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading restaurant data...</div>;
   }
@@ -245,7 +257,7 @@ const RestaurantDashboard = () => {
         <div className="header-buttons">
           <button 
             className="action-button"
-            onClick={() => console.log('Search button clicked')}
+            onClick={() => setSearchOpen(true)}
           >
             Search
           </button>
@@ -381,6 +393,13 @@ const RestaurantDashboard = () => {
           onSubmit={handleModalSubmit}
         />
       )}
+      
+      {/* Spotlight Search */}
+      <SpotlightSearch 
+        isOpen={searchOpen} 
+        onClose={() => setSearchOpen(false)} 
+        onSelectReservation={handleSelectReservation}
+      />
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchWithAuth } from '../services/api';
 import './Dashboard.css';
 import ReservationModal from './ReservationModal';
+import SpotlightSearch from './SpotlightSearch';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Dashboard = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState('view');
   const [selectedReservation, setSelectedReservation] = useState(null);
+  const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -299,6 +301,16 @@ const Dashboard = () => {
     }
   };
 
+  const handleSelectReservation = (reservation) => {
+    setSelectedReservation({
+      reservationId: reservation.reservationId,
+      restaurantId: reservation.restaurantId,
+      restaurantName: reservation.restaurantName
+    });
+    setModalMode('view');
+    setModalOpen(true);
+  };
+
   if (loading) {
     return <div className="dashboard-loading">Loading dashboard...</div>;
   }
@@ -324,7 +336,7 @@ const Dashboard = () => {
                       <span className="room-only-badge">Guest Only</span>
                       <button 
                         className="more-button"
-                        onClick={() => console.log(`Search in ${restaurant.name}`)}
+                        onClick={() => setSearchOpen(true)}
                       >
                         Search
                       </button>
@@ -478,6 +490,11 @@ const Dashboard = () => {
           onSubmit={handleModalSubmit}
         />
       )}
+      <SpotlightSearch 
+        isOpen={searchOpen} 
+        onClose={() => setSearchOpen(false)} 
+        onSelectReservation={handleSelectReservation}
+      />
     </div>
   );
 };

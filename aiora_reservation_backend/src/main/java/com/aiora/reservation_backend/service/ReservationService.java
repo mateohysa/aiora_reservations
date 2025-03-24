@@ -154,6 +154,19 @@ public class ReservationService {
                 existing.getMealDeducted() == null ||
                 existing.getMealDeducted() != updated.getMealDeducted());
     }
+    /**
+     * Search reservations across multiple fields (guest name, room number, ID, restaurant name)
+     * @param query The search query
+     * @param limit Maximum number of results to return
+     * @return List of matching reservations
+     */
+    public List<Reservation> searchReservations(String query, int limit) {
+        // Convert to lowercase for case-insensitive search with SQL wildcards
+        String searchTerm = "%" + query.toLowerCase() + "%";
+
+        // Use the DAO to perform the search
+        return reservationDao.searchReservations(searchTerm, query, limit);
+    }
     
     private void checkMealEligibility(Reservation reservation) {
         // Only check for hotel guests who want to deduct a meal

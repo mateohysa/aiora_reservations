@@ -1,0 +1,198 @@
+/* SpotlightSearch.css */
+.spotlight-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 120px;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+  }
+  
+  .spotlight-container {
+    width: 600px;
+    max-width: 90%;
+    background-color: #1a1c23;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    animation: slideDown 0.3s ease;
+    border: 1px solid #2a2d36;
+  }
+  
+  .spotlight-input-wrapper {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    border-bottom: 1px solid #2a2d36;
+    background-color: #21232c;
+  }
+  
+  .spotlight-input-wrapper svg {
+    color: #aaa;
+    margin-right: 12px;
+  }
+  
+  .spotlight-input {
+    flex: 1;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    padding: 8px 0;
+    color: #fff;
+    background-color: transparent;
+  }
+  
+  .spotlight-input::placeholder {
+    color: #777;
+  }
+  
+  .clear-search {
+    background: none;
+    border: none;
+    color: #aaa;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 0 8px;
+  }
+  
+  .spotlight-results {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 8px 0;
+  }
+  
+  .results-section {
+    padding: 8px 16px;
+  }
+  
+  .results-section h3 {
+    font-size: 14px;
+    color: #aaa;
+    margin: 8px 0;
+    padding: 8px 16px;
+  }
+  
+  .result-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin: 4px 8px;
+  }
+  
+  .result-item:hover {
+    background-color: #2a2d36;
+  }
+  
+  .result-icon {
+    margin-right: 12px;
+  }
+  
+  .result-content {
+    flex: 1;
+  }
+  
+  .result-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #fff;
+  }
+  
+  .result-details {
+    font-size: 14px;
+    color: #aaa;
+    display: flex;
+    gap: 6px;
+  }
+  
+  .result-status {
+    margin-left: 12px;
+  }
+  
+  .status-badge {
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  
+  .status-badge.confirmed {
+    background-color: rgba(76, 175, 80, 0.2);
+    color: #81c784;
+  }
+  
+  .status-badge.pending {
+    background-color: rgba(255, 152, 0, 0.2);
+    color: #ffb74d;
+  }
+  
+  .spotlight-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #aaa;
+  }
+  
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-top-color: #aaa;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-right: 10px;
+  }
+  
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+    color: #aaa;
+    text-align: center;
+  }
+  
+  .no-results svg {
+    margin-bottom: 10px;
+    stroke: #aaa;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  @keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  
+  /* Custom scrollbar */
+  .spotlight-results::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .spotlight-results::-webkit-scrollbar-track {
+    background: #21232c;
+  }
+  
+  .spotlight-results::-webkit-scrollbar-thumb {
+    background-color: #2a2d36;
+    border-radius: 4px;
+  }
+  
+  .spotlight-results::-webkit-scrollbar-thumb:hover {
+    background-color: #3a3d46;
+  }

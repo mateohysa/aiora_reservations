@@ -66,8 +66,31 @@ public class  ReservationDao {
         query.setParameter("endDate", endDate);
         return query.getResultList();
     }
-    // Add these methods to your existing ReservationDao class
-    
+
+    /**
+     * Search for reservations across multiple fields
+     * @param searchTerm Term to search for (with wildcards)
+     * @param exactTerm Term without wildcards (for exact ID matches)
+     * @param limit Maximum number of results to return
+     * @return List of matching reservations
+     */
+    public List<Reservation> searchReservations(String searchTerm, String exactTerm, int limit) {
+        TypedQuery<Reservation> query = entityManager.createQuery(
+                "SELECT r FROM Reservation r WHERE " +
+                        "LOWER(r.guestName) LIKE :searchTerm OR " +
+                        "LOWER(r.roomNumber) LIKE :searchTerm OR " +
+                        "CAST(r.reservationId AS string) = :exactTerm OR " +
+                        "LOWER(r.restaurant.name) LIKE :searchTerm " +
+                        "ORDER BY r.reservationDate DESC",
+                Reservation.class);
+
+        query.setParameter("searchTerm", searchTerm);
+        query.setParameter("exactTerm", exactTerm);
+        query.setMaxResults(limit);
+
+        return query.getResultList();
+    }
+
     public List<Reservation> findByRoomNumberAndMealDeducted(String roomNumber, Boolean mealDeducted) {
         TypedQuery<Reservation> query = entityManager.createQuery(
                 "SELECT r FROM Reservation r WHERE r.roomNumber = :roomNumber AND r.mealDeducted = :mealDeducted", 

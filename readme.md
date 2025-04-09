@@ -27,7 +27,7 @@ Spring Security for authentication
 JPA/Hibernate for database operations
 RESTful API architecture
 Database
-MySQL / PostgreSQL
+PostgreSQL
 
 - Prerequisites
 Node.js (v14+)
@@ -35,34 +35,46 @@ Java JDK (v11+)
 Maven
 PostgreSQL 
 
-- Getting Started
-Installation
+- Getting Started\
 Clone the repository
+   ```
    git clone https://github.com/yourusername/aiora-reservations.git
    cd aiora-reservations
-Set up the backend
+
+- Set up the backend
+```
    cd aiora_reservation_backend
    mvn install
-Set up the database
-   # Import the database dump
+```
+- Set up the database
+   ```# Import the database dump
    mysql -u username -p database_name < aiora_reservations_dump.sql
-Configure the backend
+
+Configure the backend\
 Edit application.properties with your database credentials:
+```
     spring.datasource.url=jdbc:mysql://localhost:3306/your_database
    spring.datasource.username=your_username
    spring.datasource.password=your_password
-Set up the frontend
+```
+- Set up the frontend
+```
    cd ../aiora_reservation_frontend
    npm install
-Running the Application
+```
+- Running the Application\
 Start the backend server
+```
    cd aiora_reservation_backend
    mvn spring-boot:run
-Start the frontend development server
+```
+- Start the frontend development server
+```
    cd aiora_reservation_frontend
    npm run dev
+```
 Access the application
-Open your browser and navigate to http://localhost:5173
+Open your browser and navigate to http://localhost:3000
 
 - Mobile Responsiveness
 Aiora Reservations is designed to work flawlessly on all device sizes:
@@ -70,7 +82,7 @@ Desktop: Full-featured dashboard with comprehensive statistics
 Tablet: Optimized layouts for reservation management on-the-go
 Mobile: Touch-friendly interfaces for quick status updates and table management
     
-- Project Structure
+```- Project Structure
 aiora_reservations/
 ├── aiora_reservation_backend/      # Java Spring Boot backend
 │   ├── src/main/java/
@@ -93,6 +105,7 @@ aiora_reservations/
 │   └── package.json                # npm dependencies
 │
 └── README.md                       # Project documentation
+```
 - Authentication
 Aiora Reservations uses JWT (JSON Web Tokens) for secure authentication. The login system supports:
 Username/password authentication
